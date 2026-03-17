@@ -44,13 +44,16 @@ const productForm = document.getElementById('productForm');
 const formTitle = document.getElementById('formTitle');
 const productIdInput = document.getElementById('productId');
 const productCategoryInput = document.getElementById('productCategory');
-const productImageInput = document.getElementById('productImage');
-const imagePreview = document.getElementById('imagePreview');
-const previewImg = document.getElementById('previewImg');
+const productImagesInput = document.getElementById('productImages');
+const imagesPreview = document.getElementById('imagesPreview');
 const productCodeInput = document.getElementById('productCode');
 const productNameInput = document.getElementById('productName');
 const productPriceInput = document.getElementById('productPrice');
 const cancelFormBtn = document.getElementById('cancelForm');
+
+// Array para armazenar as imagens selecionadas
+let selectedImages = [];
+let existingImages = [];
 
 // Elementos DOM - Confirm Modal
 const confirmModal = document.getElementById('confirmModal');
@@ -224,6 +227,8 @@ function renderProducts() {
 
 function openProductForm(productId = null) {
     editingProductId = productId;
+    selectedImages = [];
+    existingImages = [];
 
     if (productId) {
         // Editando produto existente
@@ -241,31 +246,82 @@ function openProductForm(productId = null) {
             checkbox.checked = product.sizes && product.sizes.includes(checkbox.value);
         });
 
-        // Mostrar imagem atual
-        if (product.image_url) {
-            previewImg.src = product.image_url;
-            previewImg.style.display = 'block';
-            imagePreview.style.display = 'none';
+        // Carregar imagens existentes
+        if (product.images && product.images.length > 0) {
+            existingImages = [...product.images];
+        } else if (product.image_url) {
+            existingImages = [product.image_url];
         }
+        updateImageSlots();
     } else {
         // Novo produto
         formTitle.textContent = 'Nova Roupa';
         productForm.reset();
-        previewImg.style.display = 'none';
-        imagePreview.style.display = 'flex';
+        updateImageSlots();
     }
 
     productFormModal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
+function updateImageSlots() {
+    const slots = document.querySelectorAll('.image-slot');
+    const allImages = [...existingImages];
+
+    // Adicionar previews das novas imagens selecionadas
+    selectedImages.forEach((file, index) => {
+        if (allImages.length < 4) {
+            allImages.push(URL.createObjectURL(file));
+        }
+    });
+
+    slots.forEach((slot, index) => {
+        if (index < allImages.length) {
+            slot.innerHTML = `
+                <img src="${allImages[index]}" alt="Foto ${index + 1}">
+                <button type="button" class="remove-image" data-index="${index}">&times;</button>
+            `;
+            slot.classList.add('has-image');
+        } else {
+            slot.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            `;
+            slot.classList.remove('has-image');
+        }
+    });
+
+    // Adicionar event listeners para remover imagens
+    document.querySelectorAll('.remove-image').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const index = parseInt(btn.dataset.index);
+            removeImage(index);
+        });
+    });
+}
+
+function removeImage(index) {
+    if (index < existingImages.length) {
+        existingImages.splice(index, 1);
+    } else {
+        const selectedIndex = index - existingImages.length;
+        selectedImages.splice(selectedIndex, 1);
+    }
+    updateImageSlots();
+}
+
 function closeProductForm() {
     productFormModal.classList.remove('active');
     document.body.style.overflow = '';
     editingProductId = null;
+    selectedImages = [];
+    existingImages = [];
     productForm.reset();
-    previewImg.style.display = 'none';
-    imagePreview.style.display = 'flex';
+    updateImageSlots();
 }
 
 async function saveProduct(e) {
@@ -276,7 +332,6 @@ async function saveProduct(e) {
     const name = productNameInput.value.trim();
     const price = parseFloat(productPriceInput.value);
     const sizes = Array.from(document.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
-    const imageFile = productImageInput.files[0];
 
     if (!category) {
         alert('Selecione uma categoria');
@@ -298,8 +353,14 @@ async function saveProduct(e) {
         return;
     }
 
-    if (!editingProductId && !imageFile) {
-        alert('Selecione uma foto para a roupa');
+    // Verificar se tem pelo menos uma imagem
+    if (!editingProductId && selectedImages.length === 0) {
+        alert('Selecione pelo menos uma foto para o produto');
+        return;
+    }
+
+    if (editingProductId && existingImages.length === 0 && selectedImages.length === 0) {
+        alert('O produto precisa ter pelo menos uma foto');
         return;
     }
 
@@ -308,7 +369,7 @@ async function saveProduct(e) {
     saveBtn.textContent = 'Verificando código...';
 
     // Verificar se o código já existe
-    const { data: existingProduct, error: checkError } = await supabase
+    const { data: existingProductData, error: checkError } = await supabase
         .from('products')
         .select('id, code')
         .eq('code', code)
@@ -322,25 +383,28 @@ async function saveProduct(e) {
     }
 
     // Se encontrou produto com mesmo código e não é o mesmo que estamos editando
-    if (existingProduct && existingProduct.id !== editingProductId) {
+    if (existingProductData && existingProductData.id !== editingProductId) {
         alert('Este código já está em uso por outro produto!');
         saveBtn.disabled = false;
         saveBtn.textContent = 'Salvar';
         return;
     }
 
-    saveBtn.textContent = 'Salvando...';
+    saveBtn.textContent = 'Enviando fotos...';
 
     try {
-        let image_url = null;
+        // Upload das novas imagens
+        let uploadedUrls = [...existingImages];
 
-        // Upload da imagem se houver nova
-        if (imageFile) {
-            const fileName = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        for (let i = 0; i < selectedImages.length; i++) {
+            if (uploadedUrls.length >= 4) break;
+
+            const file = selectedImages[i];
+            const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('products')
-                .upload(fileName, imageFile);
+                .upload(fileName, file);
 
             if (uploadError) {
                 throw new Error('Erro ao fazer upload da imagem: ' + uploadError.message);
@@ -351,26 +415,28 @@ async function saveProduct(e) {
                 .from('products')
                 .getPublicUrl(fileName);
 
-            image_url = urlData.publicUrl;
+            uploadedUrls.push(urlData.publicUrl);
         }
+
+        saveBtn.textContent = 'Salvando...';
+
+        // image_url mantém compatibilidade (primeira imagem)
+        const image_url = uploadedUrls[0] || null;
+        const images = uploadedUrls;
 
         if (editingProductId) {
             // Atualizar produto existente
-            const updateData = {
-                category,
-                code,
-                name,
-                price,
-                sizes
-            };
-
-            if (image_url) {
-                updateData.image_url = image_url;
-            }
-
             const { error } = await supabase
                 .from('products')
-                .update(updateData)
+                .update({
+                    category,
+                    code,
+                    name,
+                    price,
+                    sizes,
+                    image_url,
+                    images
+                })
                 .eq('id', editingProductId);
 
             if (error) throw error;
@@ -386,6 +452,7 @@ async function saveProduct(e) {
                     price,
                     sizes,
                     image_url,
+                    images,
                     archived: false
                 });
 
@@ -533,17 +600,28 @@ function setupEventListeners() {
     });
     productForm.addEventListener('submit', saveProduct);
 
-    // Preview da imagem
-    productImageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                previewImg.style.display = 'block';
-                imagePreview.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+    // Preview das imagens (múltiplas)
+    productImagesInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        const totalImages = existingImages.length + selectedImages.length + files.length;
+
+        if (totalImages > 4) {
+            alert('Você pode adicionar no máximo 4 fotos');
+            const allowedCount = 4 - existingImages.length - selectedImages.length;
+            selectedImages.push(...files.slice(0, allowedCount));
+        } else {
+            selectedImages.push(...files);
+        }
+
+        updateImageSlots();
+        productImagesInput.value = ''; // Limpar input para permitir selecionar mesmos arquivos
+    });
+
+    // Clicar nos slots para adicionar imagem
+    imagesPreview.addEventListener('click', (e) => {
+        const slot = e.target.closest('.image-slot');
+        if (slot && !slot.classList.contains('has-image')) {
+            productImagesInput.click();
         }
     });
 

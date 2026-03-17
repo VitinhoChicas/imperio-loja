@@ -160,7 +160,10 @@
     <div class="modal" id="productModal">
         <div class="modal-content">
             <button class="modal-close" id="modalClose">&times;</button>
-            <img src="" alt="" class="modal-image" id="modalImage">
+            <div class="modal-gallery">
+                <img src="" alt="" class="modal-image" id="modalImage">
+                <div class="modal-thumbnails" id="modalThumbnails"></div>
+            </div>
             <div class="modal-info">
                 <span class="modal-category" id="modalCategory"></span>
                 <h2 class="modal-title" id="modalTitle"></h2>
@@ -174,9 +177,14 @@
                     <label for="sizeSelect">Escolha o tamanho:</label>
                     <select id="sizeSelect" class="size-select"></select>
                 </div>
-                <button class="add-to-cart-btn" id="addToCartBtn">
-                    Adicionar ao Carrinho
-                </button>
+                <div class="modal-buttons">
+                    <button class="btn-add-cart" id="addToCartBtn">
+                        Adicionar ao Carrinho
+                    </button>
+                    <button class="btn-buy-now" id="buyNowBtn">
+                        Comprar Agora
+                    </button>
+                </div>
             </div>
         </div>
     </div>

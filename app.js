@@ -33,6 +33,7 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 const productModal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
 const modalImage = document.getElementById('modalImage');
+const modalThumbnails = document.getElementById('modalThumbnails');
 const modalTitle = document.getElementById('modalTitle');
 const modalCode = document.getElementById('modalCode');
 const modalPrice = document.getElementById('modalPrice');
@@ -40,6 +41,7 @@ const modalSizes = document.getElementById('modalSizes');
 const modalCategory = document.getElementById('modalCategory');
 const sizeSelect = document.getElementById('sizeSelect');
 const addToCartBtn = document.getElementById('addToCartBtn');
+const buyNowBtn = document.getElementById('buyNowBtn');
 const categoryBtns = document.querySelectorAll('.category-btn');
 const navBtns = document.querySelectorAll('.nav-btn');
 const pageLoja = document.getElementById('pageLoja');
@@ -145,9 +147,15 @@ function renderProducts() {
         return;
     }
 
-    productsGrid.innerHTML = filteredProducts.map(product => `
+    productsGrid.innerHTML = filteredProducts.map(product => {
+        // Usar primeira imagem do array ou image_url
+        const mainImage = (product.images && product.images.length > 0)
+            ? product.images[0]
+            : product.image_url;
+
+        return `
         <div class="product-card" data-id="${product.id}">
-            <img src="${product.image_url}" alt="${product.name}" class="product-image" loading="lazy">
+            <img src="${mainImage}" alt="${product.name}" class="product-image" loading="lazy">
             <div class="product-info">
                 <p class="product-category">${CATEGORY_LABELS[product.category] || ''}</p>
                 <p class="product-code">Cód: ${product.code || 'N/A'}</p>
@@ -155,12 +163,13 @@ function renderProducts() {
                 <p class="product-price">${formatPrice(product.price)}</p>
                 <p class="product-sizes">Tam: ${product.sizes ? product.sizes.join(', ') : 'N/A'}</p>
                 <div class="product-actions">
-                    <button class="btn-ver-produto" data-id="${product.id}">Ver Produto</button>
+                    <button class="btn-ver-produto" data-id="${product.id}">Ver</button>
+                    <button class="btn-add-carrinho" data-id="${product.id}">+ Carrinho</button>
                     <button class="btn-comprar" data-id="${product.id}">Comprar</button>
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     // Adicionar event listeners aos botões
     document.querySelectorAll('.btn-ver-produto').forEach(btn => {
@@ -168,6 +177,14 @@ function renderProducts() {
             e.stopPropagation();
             const productId = btn.dataset.id;
             openProductModal(productId);
+        });
+    });
+
+    document.querySelectorAll('.btn-add-carrinho').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = btn.dataset.id;
+            addToCartQuick(productId);
         });
     });
 
@@ -209,8 +226,38 @@ function openProductModal(productId) {
     currentProduct = products.find(p => p.id == productId);
     if (!currentProduct) return;
 
-    modalImage.src = currentProduct.image_url;
+    // Obter todas as imagens do produto
+    let productImages = [];
+    if (currentProduct.images && currentProduct.images.length > 0) {
+        productImages = currentProduct.images;
+    } else if (currentProduct.image_url) {
+        productImages = [currentProduct.image_url];
+    }
+
+    // Mostrar primeira imagem
+    modalImage.src = productImages[0] || '';
     modalImage.alt = currentProduct.name;
+
+    // Criar thumbnails se houver mais de uma imagem
+    if (productImages.length > 1) {
+        modalThumbnails.innerHTML = productImages.map((img, index) =>
+            `<img src="${img}" alt="Foto ${index + 1}" class="${index === 0 ? 'active' : ''}" data-index="${index}">`
+        ).join('');
+        modalThumbnails.style.display = 'flex';
+
+        // Event listeners para thumbnails
+        modalThumbnails.querySelectorAll('img').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                modalImage.src = thumb.src;
+                modalThumbnails.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            });
+        });
+    } else {
+        modalThumbnails.innerHTML = '';
+        modalThumbnails.style.display = 'none';
+    }
+
     modalTitle.textContent = currentProduct.name;
     modalCode.textContent = `Código: ${currentProduct.code || 'N/A'}`;
     modalPrice.textContent = formatPrice(currentProduct.price);
@@ -268,6 +315,45 @@ function addToCart() {
     updateCartUI();
     closeProductModal();
     openCart();
+}
+
+// Adicionar ao carrinho rápido (do card do produto)
+function addToCartQuick(productId) {
+    const product = products.find(p => p.id == productId);
+    if (!product) return;
+
+    // Usar o primeiro tamanho disponível
+    const size = product.sizes && product.sizes.length > 0 ? product.sizes[0] : 'Único';
+
+    // Obter imagem principal
+    const mainImage = (product.images && product.images.length > 0)
+        ? product.images[0]
+        : product.image_url;
+
+    // Verificar se já existe no carrinho
+    const existingItem = cart.find(
+        item => item.id === product.id && item.size === size
+    );
+
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: product.id,
+            code: product.code,
+            name: product.name,
+            price: product.price,
+            image_url: mainImage,
+            size: size,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+    updateCartUI();
+
+    // Mostrar feedback
+    alert(`${product.name} (Tam: ${size}) adicionado ao carrinho!`);
 }
 
 function removeFromCart(index) {
@@ -356,6 +442,26 @@ function comprarDireto(productId) {
     window.open(whatsappUrl, '_blank');
 }
 
+// Comprar agora do modal (com tamanho selecionado)
+function buyNow() {
+    if (!currentProduct) return;
+
+    const size = sizeSelect.value;
+
+    let message = `Olá! Quero comprar este produto:\n\n`;
+    message += `*Código:* ${currentProduct.code || 'N/A'}\n`;
+    message += `*Produto:* ${currentProduct.name}\n`;
+    message += `*Tamanho:* ${size}\n`;
+    message += `*Preço:* ${formatPrice(currentProduct.price)}\n\n`;
+    message += `Aguardo confirmação! 😊`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+    closeProductModal();
+}
+
 // ========================================
 // CHECKOUT - WHATSAPP
 // ========================================
@@ -426,6 +532,7 @@ function setupEventListeners() {
         if (e.target === productModal) closeProductModal();
     });
     addToCartBtn.addEventListener('click', addToCart);
+    buyNowBtn.addEventListener('click', buyNow);
 
     // Categorias
     categoryBtns.forEach(btn => {
