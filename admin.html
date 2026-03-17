@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imperio - Administração</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1 class="logo">IMPERIO</h1>
+            <h2>Área Administrativa</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Senha de Acesso</label>
+                    <input type="password" id="password" placeholder="Digite a senha" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+            <p class="login-error" id="loginError"></p>
+        </div>
+    </div>
+
+    <!-- Painel Admin -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <!-- Header Admin -->
+        <header class="header admin-header">
+            <div class="header-container">
+                <h1 class="logo">IMPERIO <span class="admin-badge">Admin</span></h1>
+                <div class="admin-actions">
+                    <a href="index.html" class="btn-secondary">Ver Loja</a>
+                    <button class="btn-logout" id="logoutBtn">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Admin -->
+        <main class="admin-main">
+            <!-- Estatísticas -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalProducts">0</span>
+                    <span class="stat-label">Produtos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="availableProducts">0</span>
+                    <span class="stat-label">Disponíveis</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="archivedProducts">0</span>
+                    <span class="stat-label">Arquivados</span>
+                </div>
+            </section>
+
+            <!-- Ações -->
+            <section class="actions-section">
+                <button class="btn-primary btn-large" id="addProductBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nova Roupa
+                </button>
+            </section>
+
+            <!-- Filtros Admin -->
+            <section class="filters admin-filters">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="camisas-moletons">Camisas/Moletons</button>
+                <button class="filter-btn" data-filter="calcados">Calçados</button>
+                <button class="filter-btn" data-filter="shorts-calcas">Shorts/Calças</button>
+                <button class="filter-btn" data-filter="disponivel">Disponíveis</button>
+                <button class="filter-btn" data-filter="arquivado">Arquivados</button>
+            </section>
+
+            <!-- Lista de Produtos -->
+            <section class="admin-products" id="adminProducts">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregando produtos...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Adicionar/Editar Produto -->
+    <div class="modal" id="productFormModal">
+        <div class="modal-content modal-form">
+            <button class="modal-close" id="formModalClose">&times;</button>
+            <h2 id="formTitle">Nova Roupa</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+
+                <div class="form-group">
+                    <label for="productCategory">Categoria</label>
+                    <select id="productCategory" class="category-select" required>
+                        <option value="">Selecione a categoria</option>
+                        <option value="camisas-moletons">Camisas/Moletons</option>
+                        <option value="calcados">Calçados</option>
+                        <option value="shorts-calcas">Shorts/Calças</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Foto da Roupa</label>
+                    <div class="image-upload" id="imageUpload">
+                        <input type="file" id="productImage" accept="image/*" class="file-input">
+                        <div class="image-preview" id="imagePreview">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <p>Clique para selecionar uma foto</p>
+                        </div>
+                        <img src="" alt="" class="preview-img" id="previewImg" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="productName">Nome da Roupa (Código)</label>
+                    <input type="text" id="productName" placeholder="Ex: Camiseta Preta Basic" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Preço (R$)</label>
+                    <input type="number" id="productPrice" placeholder="Ex: 89.90" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tamanhos Disponíveis</label>
+                    <div class="sizes-checkboxes">
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="PP">
+                            <span>PP</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="P">
+                            <span>P</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="M">
+                            <span>M</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="G">
+                            <span>G</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="GG">
+                            <span>GG</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="XG">
+                            <span>XG</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="36">
+                            <span>36</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="38">
+                            <span>38</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="40">
+                            <span>40</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="42">
+                            <span>42</span>
+                        </label>
+                        <label class="size-checkbox">
+                            <input type="checkbox" name="sizes" value="44">
+                            <span>44</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelForm">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="saveProduct">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content modal-confirm">
+            <h2 id="confirmTitle">Confirmar Ação</h2>
+            <p id="confirmMessage">Tem certeza que deseja realizar esta ação?</p>
+            <div class="form-actions">
+                <button class="btn-secondary" id="confirmCancel">Cancelar</button>
+                <button class="btn-danger" id="confirmAction">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
