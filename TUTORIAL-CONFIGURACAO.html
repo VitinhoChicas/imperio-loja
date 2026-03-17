@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial de Configuração - Imperio (Supabase)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #000;
+            border-bottom: 3px solid #000;
+            padding-bottom: 15px;
+        }
+        .subtitle { text-align: center; color: #666; margin-bottom: 40px; }
+        h2 {
+            background: #000;
+            color: #fff;
+            padding: 12px 20px;
+            margin: 30px 0 20px 0;
+            font-size: 18px;
+        }
+        h3 {
+            color: #000;
+            margin: 25px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        p { margin-bottom: 12px; }
+        ol, ul { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        .step {
+            background: #f9f9f9;
+            border-left: 4px solid #000;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        .step-number {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            text-align: center;
+            line-height: 28px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .important {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .important-title { font-weight: bold; color: #856404; margin-bottom: 5px; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .link { color: #0066cc; word-break: break-all; }
+        .divider { border: none; border-top: 2px dashed #ddd; margin: 40px 0; }
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #000; color: #fff; }
+        .page-break { page-break-before: always; }
+        @media print {
+            body { padding: 20px; }
+            h2 { break-after: avoid; }
+            .step { break-inside: avoid; }
+            pre { white-space: pre-wrap; word-wrap: break-word; }
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #000;
+            text-align: center;
+            color: #666;
+        }
+        .checklist { list-style: none; margin-left: 0; }
+        .checklist li { padding-left: 30px; position: relative; }
+        .checklist li::before { content: "☐"; position: absolute; left: 0; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <h1>IMPERIO</h1>
+    <p class="subtitle">Tutorial de Configuração com Supabase (Gratuito, sem cartão)</p>
+
+    <!-- PARTE 1 -->
+    <h2>PARTE 1: Criar conta no Supabase</h2>
+
+    <h3><span class="step-number">1</span> Acessar o Supabase</h3>
+    <div class="step">
+        <ol>
+            <li>Acesse: <span class="link">https://supabase.com/</span></li>
+            <li>Clique em <strong>"Start your project"</strong> (botão verde)</li>
+            <li>Faça login com <strong>GitHub</strong> ou <strong>Google</strong></li>
+        </ol>
+    </div>
+
+    <h3><span class="step-number">2</span> Criar novo projeto</h3>
+    <div class="step">
+        <ol>
+            <li>Clique em <strong>"New Project"</strong></li>
+            <li>Preencha:
+                <ul>
+                    <li><strong>Name:</strong> imperio-loja</li>
+                    <li><strong>Database Password:</strong> crie uma senha (guarde essa senha!)</li>
+                    <li><strong>Region:</strong> South America (São Paulo)</li>
+                </ul>
+            </li>
+            <li>Clique em <strong>"Create new project"</strong></li>
+            <li>Aguarde 1-2 minutos enquanto cria</li>
+        </ol>
+    </div>
+
+    <h3><span class="step-number">3</span> Copiar as credenciais</h3>
+    <div class="step">
+        <ol>
+            <li>No painel do projeto, vá em <strong>"Project Settings"</strong> (ícone de engrenagem)</li>
+            <li>Clique em <strong>"API"</strong> no menu lateral</li>
+            <li>Copie:
+                <ul>
+                    <li><strong>Project URL</strong> (ex: https://xxxxx.supabase.co)</li>
+                    <li><strong>anon public</strong> key (a chave grande)</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="important">
+        <p class="important-title">⚠️ IMPORTANTE - COLE NO ARQUIVO:</p>
+        <p>Abra o arquivo <code>supabase-config.js</code> e cole as informações:</p>
+    </div>
+
+    <pre>
+const SUPABASE_URL = 'https://xxxxx.supabase.co';    // ← Cole sua URL aqui
+const SUPABASE_ANON_KEY = 'eyJhbGci...';             // ← Cole sua key aqui</pre>
+
+    <hr class="divider">
+
+    <h2>PARTE 2: Criar o Banco de Dados</h2>
+
+    <h3><span class="step-number">4</span> Criar tabela de produtos</h3>
+    <div class="step">
+        <ol>
+            <li>No menu lateral, clique em <strong>"SQL Editor"</strong></li>
+            <li>Clique em <strong>"New query"</strong></li>
+            <li>Cole o código abaixo e clique em <strong>"Run"</strong> (ou Ctrl+Enter):</li>
+        </ol>
+    </div>
+
+    <pre>
+-- Criar tabela de produtos
+CREATE TABLE products (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    category TEXT NOT NULL,
+    sizes TEXT[] DEFAULT '{}',
+    image_url TEXT,
+    archived BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Permitir acesso público para leitura
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir leitura pública" ON products
+    FOR SELECT USING (true);
+
+CREATE POLICY "Permitir inserção pública" ON products
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Permitir atualização pública" ON products
+    FOR UPDATE USING (true);
+
+CREATE POLICY "Permitir exclusão pública" ON products
+    FOR DELETE USING (true);</pre>
+
+    <div class="success-box">
+        <strong>✅ Sucesso!</strong> Se aparecer "Success. No rows returned" está correto!
+    </div>
+
+    <div class="page-break"></div>
+
+    <h3><span class="step-number">5</span> Criar Storage para fotos</h3>
+    <div class="step">
+        <ol>
+            <li>No menu lateral, clique em <strong>"Storage"</strong></li>
+            <li>Clique em <strong>"New bucket"</strong></li>
+            <li>Nome: <code>products</code></li>
+            <li><strong>IMPORTANTE:</strong> Marque a opção <strong>"Public bucket"</strong></li>
+            <li>Clique em <strong>"Create bucket"</strong></li>
+        </ol>
+    </div>
+
+    <h3><span class="step-number">6</span> Configurar permissões do Storage</h3>
+    <div class="step">
+        <ol>
+            <li>Clique no bucket <strong>"products"</strong> que você criou</li>
+            <li>Clique na aba <strong>"Policies"</strong></li>
+            <li>Clique em <strong>"New policy"</strong></li>
+            <li>Selecione <strong>"For full customization"</strong></li>
+            <li>Preencha:
+                <ul>
+                    <li><strong>Policy name:</strong> Permitir tudo</li>
+                    <li><strong>Allowed operations:</strong> Marque TODAS (SELECT, INSERT, UPDATE, DELETE)</li>
+                    <li><strong>Target roles:</strong> anon</li>
+                </ul>
+            </li>
+            <li>Em <strong>"WITH CHECK expression"</strong> digite: <code>true</code></li>
+            <li>Em <strong>"USING expression"</strong> digite: <code>true</code></li>
+            <li>Clique em <strong>"Review"</strong> e depois <strong>"Save policy"</strong></li>
+        </ol>
+    </div>
+
+    <div class="success-box">
+        <strong>✅ Pronto!</strong> O Supabase está configurado. Agora vamos hospedar o site.
+    </div>
+
+    <hr class="divider">
+
+    <!-- PARTE 3 -->
+    <h2>PARTE 3: Hospedar o Site (Vercel - Grátis)</h2>
+
+    <h3><span class="step-number">7</span> Criar conta no GitHub</h3>
+    <div class="step">
+        <ol>
+            <li>Acesse: <span class="link">https://github.com/</span></li>
+            <li>Clique em <strong>"Sign up"</strong> e crie uma conta</li>
+            <li>Ou faça login se já tiver conta</li>
+        </ol>
+    </div>
+
+    <h3><span class="step-number">8</span> Subir os arquivos</h3>
+    <div class="step">
+        <ol>
+            <li>Clique em <strong>"New"</strong> (botão verde) para criar repositório</li>
+            <li>Nome: <code>imperio-loja</code></li>
+            <li>Marque <strong>"Public"</strong></li>
+            <li>Clique em <strong>"Create repository"</strong></li>
+            <li>Clique em <strong>"uploading an existing file"</strong></li>
+            <li>Arraste TODOS os arquivos da pasta Imperio Roupas (incluindo a pasta Foto)</li>
+            <li>Clique em <strong>"Commit changes"</strong></li>
+        </ol>
+    </div>
+
+    <div class="info-box">
+        <strong>📁 Arquivos que você deve subir:</strong>
+        <ul>
+            <li>index.html</li>
+            <li>admin.html</li>
+            <li>style.css</li>
+            <li>app.js</li>
+            <li>admin.js</li>
+            <li>supabase-config.js (já com suas credenciais)</li>
+            <li>Pasta Foto/ (com as imagens)</li>
+        </ul>
+    </div>
+
+    <h3><span class="step-number">9</span> Conectar ao Vercel</h3>
+    <div class="step">
+        <ol>
+            <li>Acesse: <span class="link">https://vercel.com/</span></li>
+            <li>Clique em <strong>"Start Deploying"</strong></li>
+            <li>Faça login com GitHub</li>
+            <li>Clique em <strong>"Import"</strong> no repositório <code>imperio-loja</code></li>
+            <li>Clique em <strong>"Deploy"</strong></li>
+            <li>Aguarde 1-2 minutos</li>
+        </ol>
+    </div>
+
+    <div class="success-box">
+        <strong>✅ Pronto!</strong> Você receberá um link tipo: <code>imperio-loja.vercel.app</code>
+    </div>
+
+    <hr class="divider">
+
+    <div class="page-break"></div>
+
+    <!-- PARTE 4 -->
+    <h2>PARTE 4: Como Usar o Sistema</h2>
+
+    <h3>Links de Acesso</h3>
+    <table>
+        <tr>
+            <th>Página</th>
+            <th>Link</th>
+            <th>Quem usa</th>
+        </tr>
+        <tr>
+            <td>Loja</td>
+            <td><code>seu-site.vercel.app</code></td>
+            <td>Clientes</td>
+        </tr>
+        <tr>
+            <td>Admin</td>
+            <td><code>seu-site.vercel.app/admin.html</code></td>
+            <td>Você</td>
+        </tr>
+    </table>
+
+    <div class="info-box">
+        <strong>🔑 Senha padrão do Admin:</strong> <code>imperio2024</code>
+    </div>
+
+    <h3>Como adicionar uma roupa:</h3>
+    <div class="step">
+        <ol>
+            <li>Acesse <code>seu-site.vercel.app/admin.html</code></li>
+            <li>Digite a senha: <code>imperio2024</code></li>
+            <li>Clique em <strong>"+ Nova Roupa"</strong></li>
+            <li>Selecione a <strong>Categoria</strong></li>
+            <li>Clique para <strong>selecionar a foto</strong></li>
+            <li>Preencha <strong>nome</strong> e <strong>preço</strong></li>
+            <li>Marque os <strong>tamanhos</strong> disponíveis</li>
+            <li>Clique em <strong>"Salvar"</strong></li>
+        </ol>
+    </div>
+
+    <h3>Alterar a senha do Admin:</h3>
+    <div class="step">
+        <ol>
+            <li>Abra o arquivo <code>admin.js</code></li>
+            <li>Na linha 7, altere: <code>const ADMIN_PASSWORD = 'imperio2024';</code></li>
+            <li>Suba o arquivo no GitHub</li>
+        </ol>
+    </div>
+
+    <h3>Alterar o WhatsApp:</h3>
+    <div class="step">
+        <ol>
+            <li>Abra o arquivo <code>app.js</code></li>
+            <li>Na linha 7, altere: <code>const WHATSAPP_NUMBER = '5517997539595';</code></li>
+            <li>Suba o arquivo no GitHub</li>
+        </ol>
+    </div>
+
+    <hr class="divider">
+
+    <h2>Checklist de Configuração</h2>
+
+    <ul class="checklist">
+        <li>Criei conta no Supabase</li>
+        <li>Criei o projeto</li>
+        <li>Copiei URL e anon key para supabase-config.js</li>
+        <li>Criei a tabela products (rodei o SQL)</li>
+        <li>Criei o bucket "products" no Storage</li>
+        <li>Configurei a policy do Storage</li>
+        <li>Criei conta no GitHub</li>
+        <li>Subi os arquivos para o GitHub</li>
+        <li>Conectei ao Vercel</li>
+        <li>Testei a loja</li>
+        <li>Testei o admin</li>
+        <li>Adicionei minha primeira roupa</li>
+    </ul>
+
+    <hr class="divider">
+
+    <h2>Dúvidas Frequentes</h2>
+
+    <p><strong>O site não carrega os produtos:</strong></p>
+    <p>Verifique se as credenciais estão corretas no arquivo <code>supabase-config.js</code></p>
+
+    <p><strong>Erro ao subir foto:</strong></p>
+    <p>Verifique se criou o bucket "products" como público e configurou a policy.</p>
+
+    <p><strong>Esqueci a senha do admin:</strong></p>
+    <p>Abra o arquivo <code>admin.js</code> e veja a senha na linha 7.</p>
+
+    <div class="footer">
+        <p><strong>IMPERIO - Loja de Roupas</strong></p>
+        <p>Tutorial de Configuração com Supabase</p>
+    </div>
+
+</body>
+</html>
