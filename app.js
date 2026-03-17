@@ -150,17 +150,39 @@ function renderProducts() {
             <img src="${product.image_url}" alt="${product.name}" class="product-image" loading="lazy">
             <div class="product-info">
                 <p class="product-category">${CATEGORY_LABELS[product.category] || ''}</p>
+                <p class="product-code">Cód: ${product.code || 'N/A'}</p>
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-price">${formatPrice(product.price)}</p>
                 <p class="product-sizes">Tam: ${product.sizes ? product.sizes.join(', ') : 'N/A'}</p>
+                <div class="product-actions">
+                    <button class="btn-ver-produto" data-id="${product.id}">Ver Produto</button>
+                    <button class="btn-comprar" data-id="${product.id}">Comprar</button>
+                </div>
             </div>
         </div>
     `).join('');
 
-    // Adicionar event listeners aos cards
-    document.querySelectorAll('.product-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const productId = card.dataset.id;
+    // Adicionar event listeners aos botões
+    document.querySelectorAll('.btn-ver-produto').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = btn.dataset.id;
+            openProductModal(productId);
+        });
+    });
+
+    document.querySelectorAll('.btn-comprar').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = btn.dataset.id;
+            comprarDireto(productId);
+        });
+    });
+
+    // Clicar na imagem também abre o modal
+    document.querySelectorAll('.product-card .product-image').forEach(img => {
+        img.addEventListener('click', () => {
+            const productId = img.closest('.product-card').dataset.id;
             openProductModal(productId);
         });
     });
@@ -190,7 +212,7 @@ function openProductModal(productId) {
     modalImage.src = currentProduct.image_url;
     modalImage.alt = currentProduct.name;
     modalTitle.textContent = currentProduct.name;
-    modalCode.textContent = `Código: ${currentProduct.name}`;
+    modalCode.textContent = `Código: ${currentProduct.code || 'N/A'}`;
     modalPrice.textContent = formatPrice(currentProduct.price);
     modalCategory.textContent = CATEGORY_LABELS[currentProduct.category] || '';
 
@@ -233,6 +255,7 @@ function addToCart() {
     } else {
         cart.push({
             id: currentProduct.id,
+            code: currentProduct.code,
             name: currentProduct.name,
             price: currentProduct.price,
             image_url: currentProduct.image_url,
@@ -311,6 +334,29 @@ function closeCart() {
 }
 
 // ========================================
+// COMPRAR DIRETO - WHATSAPP
+// ========================================
+
+function comprarDireto(productId) {
+    const product = products.find(p => p.id == productId);
+    if (!product) return;
+
+    const tamanhos = product.sizes ? product.sizes.join(', ') : 'N/A';
+
+    let message = `Olá! Tenho interesse neste produto:\n\n`;
+    message += `*Código:* ${product.code || 'N/A'}\n`;
+    message += `*Produto:* ${product.name}\n`;
+    message += `*Preço:* ${formatPrice(product.price)}\n`;
+    message += `*Tamanhos disponíveis:* ${tamanhos}\n\n`;
+    message += `Gostaria de mais informações!`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+}
+
+// ========================================
 // CHECKOUT - WHATSAPP
 // ========================================
 
@@ -323,6 +369,7 @@ function checkout() {
 
     cart.forEach((item, index) => {
         message += `*${index + 1}. ${item.name}*\n`;
+        message += `   Código: ${item.code || 'N/A'}\n`;
         message += `   Tamanho: ${item.size}\n`;
         message += `   Quantidade: ${item.quantity}\n`;
         message += `   Valor: ${formatPrice(item.price * item.quantity)}\n\n`;

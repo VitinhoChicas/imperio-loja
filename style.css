@@ -179,6 +179,13 @@ body {
     padding: 0.75rem;
 }
 
+.product-code {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
 .product-name {
     font-size: 0.875rem;
     font-weight: 500;
@@ -197,6 +204,43 @@ body {
     font-size: 0.75rem;
     color: var(--gray-500);
     margin-top: 0.25rem;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.btn-ver-produto,
+.btn-comprar {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-ver-produto {
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid var(--black);
+}
+
+.btn-ver-produto:hover {
+    background: var(--gray-100);
+}
+
+.btn-comprar {
+    background: var(--black);
+    color: var(--white);
+}
+
+.btn-comprar:hover {
+    background: var(--gray-800);
 }
 
 /* ========================================
@@ -800,6 +844,13 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
+}
+
+.field-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin-top: 0.25rem;
 }
 
 .form-group input[type="text"],

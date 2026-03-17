@@ -47,6 +47,7 @@ const productCategoryInput = document.getElementById('productCategory');
 const productImageInput = document.getElementById('productImage');
 const imagePreview = document.getElementById('imagePreview');
 const previewImg = document.getElementById('previewImg');
+const productCodeInput = document.getElementById('productCode');
 const productNameInput = document.getElementById('productName');
 const productPriceInput = document.getElementById('productPrice');
 const cancelFormBtn = document.getElementById('cancelForm');
@@ -197,6 +198,7 @@ function renderProducts() {
             <img src="${product.image_url}" alt="${product.name}" class="admin-product-image">
             <div class="admin-product-info">
                 <span class="admin-product-category">${CATEGORY_LABELS[product.category] || 'Sem categoria'}</span>
+                <p class="admin-product-code"><strong>Código:</strong> ${product.code || 'N/A'}</p>
                 <p class="admin-product-name">${product.name}</p>
                 <p class="admin-product-price">${formatPrice(product.price)}</p>
                 <p class="admin-product-sizes">Tamanhos: ${product.sizes ? product.sizes.join(', ') : 'N/A'}</p>
@@ -230,6 +232,7 @@ function openProductForm(productId = null) {
 
         formTitle.textContent = 'Editar Roupa';
         productCategoryInput.value = product.category || '';
+        productCodeInput.value = product.code || '';
         productNameInput.value = product.name;
         productPriceInput.value = product.price;
 
@@ -269,6 +272,7 @@ async function saveProduct(e) {
     e.preventDefault();
 
     const category = productCategoryInput.value;
+    const code = productCodeInput.value.trim().toUpperCase();
     const name = productNameInput.value.trim();
     const price = parseFloat(productPriceInput.value);
     const sizes = Array.from(document.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
@@ -276,6 +280,11 @@ async function saveProduct(e) {
 
     if (!category) {
         alert('Selecione uma categoria');
+        return;
+    }
+
+    if (!code) {
+        alert('Digite o código do produto');
         return;
     }
 
@@ -296,6 +305,30 @@ async function saveProduct(e) {
 
     const saveBtn = document.getElementById('saveProduct');
     saveBtn.disabled = true;
+    saveBtn.textContent = 'Verificando código...';
+
+    // Verificar se o código já existe
+    const { data: existingProduct, error: checkError } = await supabase
+        .from('products')
+        .select('id, code')
+        .eq('code', code)
+        .maybeSingle();
+
+    if (checkError) {
+        alert('Erro ao verificar código: ' + checkError.message);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Salvar';
+        return;
+    }
+
+    // Se encontrou produto com mesmo código e não é o mesmo que estamos editando
+    if (existingProduct && existingProduct.id !== editingProductId) {
+        alert('Este código já está em uso por outro produto!');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Salvar';
+        return;
+    }
+
     saveBtn.textContent = 'Salvando...';
 
     try {
@@ -325,6 +358,7 @@ async function saveProduct(e) {
             // Atualizar produto existente
             const updateData = {
                 category,
+                code,
                 name,
                 price,
                 sizes
@@ -347,6 +381,7 @@ async function saveProduct(e) {
                 .from('products')
                 .insert({
                     category,
+                    code,
                     name,
                     price,
                     sizes,
