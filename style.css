@@ -207,25 +207,25 @@ body {
 }
 
 .product-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.3rem;
     margin-top: 0.75rem;
 }
 
 .btn-ver-produto,
 .btn-add-carrinho,
 .btn-comprar {
-    flex: 1;
-    min-width: 30%;
-    padding: 0.4rem 0.2rem;
-    font-size: 0.65rem;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.6rem;
     font-weight: 600;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s;
-    white-space: nowrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-ver-produto {
@@ -242,6 +242,14 @@ body {
     background: var(--gray-100);
     color: var(--black);
     border: 1px solid var(--gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+}
+
+.btn-add-carrinho svg {
+    flex-shrink: 0;
 }
 
 .btn-add-carrinho:hover {
@@ -629,6 +637,29 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 1rem;
+}
+
+.continue-shopping-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--white);
+    color: var(--black);
+    border: 2px solid var(--black);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    margin-bottom: 0.75rem;
+}
+
+.continue-shopping-btn:hover {
+    background-color: var(--gray-100);
 }
 
 .checkout-btn {
@@ -1199,17 +1230,18 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
     background: var(--white);
     border: 2px solid var(--gray-200);
     border-radius: 12px;
     font-family: inherit;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s;
-    min-width: 90px;
+    min-width: 70px;
+    flex-shrink: 0;
     text-align: center;
 }
 
@@ -1481,18 +1513,35 @@ body {
     }
 
     .category-btn {
-        min-width: 80px;
-        padding: 0.75rem;
+        min-width: 65px;
+        padding: 0.5rem 0.4rem;
+        font-size: 0.55rem;
     }
 
     .category-icon {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
 
     .category-icon svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .product-actions {
+        gap: 0.25rem;
+    }
+
+    .btn-ver-produto,
+    .btn-add-carrinho,
+    .btn-comprar {
+        padding: 0.4rem 0.15rem;
+        font-size: 0.55rem;
+    }
+
+    .btn-add-carrinho svg {
+        width: 10px;
+        height: 10px;
     }
 
     .stats-section {
