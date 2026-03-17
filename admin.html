@@ -208,7 +208,9 @@
         // Configuração do Supabase
         var SUPABASE_URL = 'https://uaaecubrpbkshtgozefb.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhYWVjdWJycGJrc2h0Z296ZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MTcyODAsImV4cCI6MjA4OTI5MzI4MH0.c7mGFniboCKJ_pHkeV-0qeiULityMsABH5-w4ubMriI';
-        var supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Guardar SDK antes de sobrescrever
+        var _sdk = window.supabase;
+        var supabase = _sdk.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </script>
     <script src="admin.js"></script>
 </body>
