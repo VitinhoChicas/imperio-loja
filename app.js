@@ -4,7 +4,7 @@
 // ========================================
 
 // Número do WhatsApp para pedidos
-const WHATSAPP_NUMBER = '5517997539595';
+const WHATSAPP_NUMBER = '5517988119720';
 
 // Mapeamento de categorias
 const CATEGORY_LABELS = {
