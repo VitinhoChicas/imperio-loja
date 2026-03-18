@@ -20,6 +20,13 @@ let currentProduct = null;
 let currentCategory = 'todos';
 let currentPage = 'loja';
 
+// Estado dos filtros
+let activeFilters = {
+    sizes: [],
+    colors: [],
+    priceRange: null
+};
+
 // Elementos DOM
 const productsGrid = document.getElementById('productsGrid');
 const cartBtn = document.getElementById('cartBtn');
@@ -33,11 +40,20 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 const continueShoppingBtn = document.getElementById('continueShoppingBtn');
 const productModal = document.getElementById('productModal');
 const modalClose = document.getElementById('modalClose');
+const modalGallery = document.getElementById('modalGallery');
 const modalImage = document.getElementById('modalImage');
 const modalThumbnails = document.getElementById('modalThumbnails');
+const galleryPrev = document.getElementById('galleryPrev');
+const galleryNext = document.getElementById('galleryNext');
+const galleryDots = document.getElementById('galleryDots');
 const modalTitle = document.getElementById('modalTitle');
+
+// Estado da galeria
+let currentImageIndex = 0;
+let productImages = [];
 const modalCode = document.getElementById('modalCode');
 const modalPrice = document.getElementById('modalPrice');
+const modalColor = document.getElementById('modalColor');
 const modalSizes = document.getElementById('modalSizes');
 const modalCategory = document.getElementById('modalCategory');
 const sizeSelect = document.getElementById('sizeSelect');
@@ -47,6 +63,15 @@ const categoryBtns = document.querySelectorAll('.category-btn');
 const navBtns = document.querySelectorAll('.nav-btn');
 const pageLoja = document.getElementById('pageLoja');
 const pageCreditos = document.getElementById('pageCreditos');
+
+// Elementos de Filtro
+const filtersToggle = document.getElementById('filtersToggle');
+const filtersPanel = document.getElementById('filtersPanel');
+const filtersCount = document.getElementById('filtersCount');
+const filterSizesBtns = document.querySelectorAll('#filterSizes .filter-option');
+const filterColorsBtns = document.querySelectorAll('#filterColors .filter-option');
+const filterPriceBtns = document.querySelectorAll('#filterPrice .filter-option');
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
 // ========================================
 // INICIALIZAÇÃO
@@ -140,11 +165,36 @@ function renderProducts() {
 
     // Filtrar por categoria
     if (currentCategory !== 'todos') {
-        filteredProducts = products.filter(p => p.category === currentCategory);
+        filteredProducts = filteredProducts.filter(p => p.category === currentCategory);
+    }
+
+    // Filtrar por tamanho
+    if (activeFilters.sizes.length > 0) {
+        filteredProducts = filteredProducts.filter(p =>
+            p.sizes && p.sizes.some(size => activeFilters.sizes.includes(size))
+        );
+    }
+
+    // Filtrar por cor
+    if (activeFilters.colors.length > 0) {
+        filteredProducts = filteredProducts.filter(p =>
+            p.color && activeFilters.colors.includes(p.color)
+        );
+    }
+
+    // Filtrar por preço
+    if (activeFilters.priceRange) {
+        const [min, max] = activeFilters.priceRange.split('-').map(v => v === '+' ? Infinity : parseFloat(v));
+        filteredProducts = filteredProducts.filter(p => {
+            if (max === Infinity) {
+                return p.price >= min;
+            }
+            return p.price >= min && p.price <= max;
+        });
     }
 
     if (filteredProducts.length === 0) {
-        showEmptyState('Nenhum produto encontrado nesta categoria');
+        showEmptyState('Nenhum produto encontrado com os filtros selecionados');
         return;
     }
 
@@ -162,6 +212,7 @@ function renderProducts() {
                 <p class="product-code">Cód: ${product.code || 'N/A'}</p>
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-price">${formatPrice(product.price)}</p>
+                <p class="product-color">Cor: ${product.color ? product.color.charAt(0).toUpperCase() + product.color.slice(1) : 'N/A'}</p>
                 <p class="product-sizes">Tam: ${product.sizes ? product.sizes.join(', ') : 'N/A'}</p>
                 <div class="product-actions">
                     <button class="btn-ver-produto" data-id="${product.id}">Ver</button>
@@ -231,33 +282,57 @@ function openProductModal(productId) {
     if (!currentProduct) return;
 
     // Obter todas as imagens do produto
-    let productImages = [];
+    productImages = [];
     if (currentProduct.images && currentProduct.images.length > 0) {
         productImages = currentProduct.images;
     } else if (currentProduct.image_url) {
         productImages = [currentProduct.image_url];
     }
 
-    // Mostrar primeira imagem
-    modalImage.src = productImages[0] || '';
-    modalImage.alt = currentProduct.name;
+    // Resetar índice
+    currentImageIndex = 0;
 
-    // Criar thumbnails se houver mais de uma imagem
+    // Mostrar primeira imagem
+    updateGalleryImage();
+
+    // Configurar navegação
     if (productImages.length > 1) {
+        galleryPrev.classList.remove('hidden');
+        galleryNext.classList.remove('hidden');
+
+        // Criar dots
+        galleryDots.innerHTML = productImages.map((_, index) =>
+            `<button class="gallery-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></button>`
+        ).join('');
+        galleryDots.style.display = 'flex';
+
+        // Criar thumbnails
         modalThumbnails.innerHTML = productImages.map((img, index) =>
             `<img src="${img}" alt="Foto ${index + 1}" class="${index === 0 ? 'active' : ''}" data-index="${index}">`
         ).join('');
         modalThumbnails.style.display = 'flex';
 
+        // Event listeners para dots
+        galleryDots.querySelectorAll('.gallery-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToImage(parseInt(dot.dataset.index));
+            });
+        });
+
         // Event listeners para thumbnails
         modalThumbnails.querySelectorAll('img').forEach(thumb => {
             thumb.addEventListener('click', () => {
-                modalImage.src = thumb.src;
-                modalThumbnails.querySelectorAll('img').forEach(t => t.classList.remove('active'));
-                thumb.classList.add('active');
+                goToImage(parseInt(thumb.dataset.index));
             });
         });
+
+        // Configurar swipe
+        setupSwipe();
     } else {
+        galleryPrev.classList.add('hidden');
+        galleryNext.classList.add('hidden');
+        galleryDots.innerHTML = '';
+        galleryDots.style.display = 'none';
         modalThumbnails.innerHTML = '';
         modalThumbnails.style.display = 'none';
     }
@@ -265,6 +340,7 @@ function openProductModal(productId) {
     modalTitle.textContent = currentProduct.name;
     modalCode.textContent = `Código: ${currentProduct.code || 'N/A'}`;
     modalPrice.textContent = formatPrice(currentProduct.price);
+    modalColor.textContent = `Cor: ${currentProduct.color ? currentProduct.color.charAt(0).toUpperCase() + currentProduct.color.slice(1) : 'N/A'}`;
     modalCategory.textContent = CATEGORY_LABELS[currentProduct.category] || '';
 
     // Tamanhos disponíveis
@@ -285,6 +361,75 @@ function closeProductModal() {
     productModal.classList.remove('active');
     document.body.style.overflow = '';
     currentProduct = null;
+}
+
+// ========================================
+// GALERIA DE IMAGENS - NAVEGAÇÃO
+// ========================================
+
+function updateGalleryImage() {
+    if (productImages.length === 0) return;
+
+    modalImage.src = productImages[currentImageIndex];
+
+    // Atualizar dots
+    galleryDots.querySelectorAll('.gallery-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentImageIndex);
+    });
+
+    // Atualizar thumbnails
+    modalThumbnails.querySelectorAll('img').forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentImageIndex);
+    });
+}
+
+function goToImage(index) {
+    if (index < 0 || index >= productImages.length) return;
+    currentImageIndex = index;
+    updateGalleryImage();
+}
+
+function prevImage() {
+    if (productImages.length <= 1) return;
+    currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+    updateGalleryImage();
+}
+
+function nextImage() {
+    if (productImages.length <= 1) return;
+    currentImageIndex = (currentImageIndex + 1) % productImages.length;
+    updateGalleryImage();
+}
+
+function setupSwipe() {
+    let startX = 0;
+    let endX = 0;
+    const threshold = 50; // Mínimo de pixels para considerar um swipe
+
+    modalImage.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    modalImage.addEventListener('touchmove', (e) => {
+        endX = e.touches[0].clientX;
+    }, { passive: true });
+
+    modalImage.addEventListener('touchend', () => {
+        const diff = startX - endX;
+
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                // Swipe para esquerda - próxima imagem
+                nextImage();
+            } else {
+                // Swipe para direita - imagem anterior
+                prevImage();
+            }
+        }
+
+        startX = 0;
+        endX = 0;
+    });
 }
 
 // ========================================
@@ -515,6 +660,81 @@ function setCategory(category) {
 }
 
 // ========================================
+// FILTROS
+// ========================================
+
+function toggleFiltersPanel() {
+    filtersPanel.classList.toggle('active');
+    filtersToggle.classList.toggle('active');
+}
+
+function toggleSizeFilter(size, btn) {
+    const index = activeFilters.sizes.indexOf(size);
+    if (index > -1) {
+        activeFilters.sizes.splice(index, 1);
+        btn.classList.remove('active');
+    } else {
+        activeFilters.sizes.push(size);
+        btn.classList.add('active');
+    }
+    updateFiltersCount();
+    renderProducts();
+}
+
+function toggleColorFilter(color, btn) {
+    const index = activeFilters.colors.indexOf(color);
+    if (index > -1) {
+        activeFilters.colors.splice(index, 1);
+        btn.classList.remove('active');
+    } else {
+        activeFilters.colors.push(color);
+        btn.classList.add('active');
+    }
+    updateFiltersCount();
+    renderProducts();
+}
+
+function setPriceFilter(priceRange, btn) {
+    // Se clicou no mesmo, desativa
+    if (activeFilters.priceRange === priceRange) {
+        activeFilters.priceRange = null;
+        btn.classList.remove('active');
+    } else {
+        // Remove active de todos os botões de preço
+        filterPriceBtns.forEach(b => b.classList.remove('active'));
+        activeFilters.priceRange = priceRange;
+        btn.classList.add('active');
+    }
+    updateFiltersCount();
+    renderProducts();
+}
+
+function clearFilters() {
+    activeFilters.sizes = [];
+    activeFilters.colors = [];
+    activeFilters.priceRange = null;
+
+    // Remover active de todos os botões de filtro
+    filterSizesBtns.forEach(btn => btn.classList.remove('active'));
+    filterColorsBtns.forEach(btn => btn.classList.remove('active'));
+    filterPriceBtns.forEach(btn => btn.classList.remove('active'));
+
+    updateFiltersCount();
+    renderProducts();
+}
+
+function updateFiltersCount() {
+    const count = activeFilters.sizes.length + activeFilters.colors.length + (activeFilters.priceRange ? 1 : 0);
+    if (count > 0) {
+        filtersCount.textContent = count;
+        filtersCount.style.display = 'inline-flex';
+    } else {
+        filtersCount.textContent = '';
+        filtersCount.style.display = 'none';
+    }
+}
+
+// ========================================
 // EVENT LISTENERS
 // ========================================
 
@@ -539,10 +759,31 @@ function setupEventListeners() {
     addToCartBtn.addEventListener('click', addToCart);
     buyNowBtn.addEventListener('click', buyNow);
 
+    // Navegação da galeria
+    galleryPrev.addEventListener('click', prevImage);
+    galleryNext.addEventListener('click', nextImage);
+
     // Categorias
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => setCategory(btn.dataset.category));
     });
+
+    // Filtros
+    filtersToggle.addEventListener('click', toggleFiltersPanel);
+
+    filterSizesBtns.forEach(btn => {
+        btn.addEventListener('click', () => toggleSizeFilter(btn.dataset.size, btn));
+    });
+
+    filterColorsBtns.forEach(btn => {
+        btn.addEventListener('click', () => toggleColorFilter(btn.dataset.color, btn));
+    });
+
+    filterPriceBtns.forEach(btn => {
+        btn.addEventListener('click', () => setPriceFilter(btn.dataset.price, btn));
+    });
+
+    clearFiltersBtn.addEventListener('click', clearFilters);
 
     // Fechar com ESC
     document.addEventListener('keydown', (e) => {

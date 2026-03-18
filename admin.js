@@ -49,6 +49,7 @@ const imagesPreview = document.getElementById('imagesPreview');
 const productCodeInput = document.getElementById('productCode');
 const productNameInput = document.getElementById('productName');
 const productPriceInput = document.getElementById('productPrice');
+const productColorInput = document.getElementById('productColor');
 const cancelFormBtn = document.getElementById('cancelForm');
 
 // Array para armazenar as imagens selecionadas
@@ -204,6 +205,7 @@ function renderProducts() {
                 <p class="admin-product-code"><strong>Código:</strong> ${product.code || 'N/A'}</p>
                 <p class="admin-product-name">${product.name}</p>
                 <p class="admin-product-price">${formatPrice(product.price)}</p>
+                <p class="admin-product-color">Cor: ${product.color ? product.color.charAt(0).toUpperCase() + product.color.slice(1) : 'N/A'}</p>
                 <p class="admin-product-sizes">Tamanhos: ${product.sizes ? product.sizes.join(', ') : 'N/A'}</p>
                 <span class="admin-product-status ${product.archived ? 'archived' : ''}">
                     ${product.archived ? 'Arquivado' : 'Disponível'}
@@ -240,6 +242,7 @@ function openProductForm(productId = null) {
         productCodeInput.value = product.code || '';
         productNameInput.value = product.name;
         productPriceInput.value = product.price;
+        productColorInput.value = product.color || '';
 
         // Marcar tamanhos
         document.querySelectorAll('input[name="sizes"]').forEach(checkbox => {
@@ -331,6 +334,7 @@ async function saveProduct(e) {
     const code = productCodeInput.value.trim().toUpperCase();
     const name = productNameInput.value.trim();
     const price = parseFloat(productPriceInput.value);
+    const color = productColorInput.value;
     const sizes = Array.from(document.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
 
     if (!category) {
@@ -340,6 +344,11 @@ async function saveProduct(e) {
 
     if (!code) {
         alert('Digite o código do produto');
+        return;
+    }
+
+    if (!color) {
+        alert('Selecione a cor do produto');
         return;
     }
 
@@ -433,6 +442,7 @@ async function saveProduct(e) {
                     code,
                     name,
                     price,
+                    color,
                     sizes,
                     image_url,
                     images
@@ -450,6 +460,7 @@ async function saveProduct(e) {
                     code,
                     name,
                     price,
+                    color,
                     sizes,
                     image_url,
                     images,

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imperio - Loja de Roupas</title>
+    <title>ImperioMen - Loja de Roupas</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,10 @@
     <!-- Header -->
     <header class="header">
         <div class="header-container">
-            <h1 class="logo">IMPERIO</h1>
+            <h1 class="logo">
+                <img src="Foto/Logo.png" alt="Logo" class="logo-img">
+                IMPERIOMEN
+            </h1>
             <nav class="header-nav">
                 <button class="nav-btn active" data-page="loja">Loja</button>
                 <button class="nav-btn" data-page="creditos">Créditos</button>
@@ -72,6 +75,89 @@
             </button>
         </section>
 
+        <!-- Filtros -->
+        <section class="filters-section">
+            <button class="filters-toggle" id="filtersToggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                Filtros
+                <span class="filters-count" id="filtersCount"></span>
+            </button>
+            <div class="filters-panel" id="filtersPanel">
+                <div class="filter-group">
+                    <label class="filter-label">Tamanho</label>
+                    <div class="filter-options filter-sizes" id="filterSizes">
+                        <button class="filter-option" data-size="PP">PP</button>
+                        <button class="filter-option" data-size="P">P</button>
+                        <button class="filter-option" data-size="M">M</button>
+                        <button class="filter-option" data-size="G">G</button>
+                        <button class="filter-option" data-size="GG">GG</button>
+                        <button class="filter-option" data-size="XG">XG</button>
+                        <button class="filter-option" data-size="36">36</button>
+                        <button class="filter-option" data-size="38">38</button>
+                        <button class="filter-option" data-size="40">40</button>
+                        <button class="filter-option" data-size="42">42</button>
+                        <button class="filter-option" data-size="44">44</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Cor</label>
+                    <div class="filter-options filter-colors" id="filterColors">
+                        <button class="filter-option color-option" data-color="preto" style="--color: #000000">
+                            <span class="color-circle"></span>Preto
+                        </button>
+                        <button class="filter-option color-option" data-color="branco" style="--color: #FFFFFF">
+                            <span class="color-circle"></span>Branco
+                        </button>
+                        <button class="filter-option color-option" data-color="cinza" style="--color: #808080">
+                            <span class="color-circle"></span>Cinza
+                        </button>
+                        <button class="filter-option color-option" data-color="azul" style="--color: #0066CC">
+                            <span class="color-circle"></span>Azul
+                        </button>
+                        <button class="filter-option color-option" data-color="vermelho" style="--color: #CC0000">
+                            <span class="color-circle"></span>Vermelho
+                        </button>
+                        <button class="filter-option color-option" data-color="verde" style="--color: #008800">
+                            <span class="color-circle"></span>Verde
+                        </button>
+                        <button class="filter-option color-option" data-color="amarelo" style="--color: #FFCC00">
+                            <span class="color-circle"></span>Amarelo
+                        </button>
+                        <button class="filter-option color-option" data-color="rosa" style="--color: #FF69B4">
+                            <span class="color-circle"></span>Rosa
+                        </button>
+                        <button class="filter-option color-option" data-color="laranja" style="--color: #FF6600">
+                            <span class="color-circle"></span>Laranja
+                        </button>
+                        <button class="filter-option color-option" data-color="marrom" style="--color: #8B4513">
+                            <span class="color-circle"></span>Marrom
+                        </button>
+                        <button class="filter-option color-option" data-color="bege" style="--color: #D2B48C">
+                            <span class="color-circle"></span>Bege
+                        </button>
+                        <button class="filter-option color-option" data-color="roxo" style="--color: #800080">
+                            <span class="color-circle"></span>Roxo
+                        </button>
+                        <button class="filter-option color-option" data-color="multicolor" style="--color: linear-gradient(45deg, red, yellow, green, blue)">
+                            <span class="color-circle multicolor"></span>Multicolor
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Preço</label>
+                    <div class="filter-options filter-price" id="filterPrice">
+                        <button class="filter-option" data-price="0-50">Até R$ 50</button>
+                        <button class="filter-option" data-price="50-100">R$ 50 - R$ 100</button>
+                        <button class="filter-option" data-price="100-200">R$ 100 - R$ 200</button>
+                        <button class="filter-option" data-price="200+">Acima de R$ 200</button>
+                    </div>
+                </div>
+                <button class="clear-filters-btn" id="clearFiltersBtn">Limpar Filtros</button>
+            </div>
+        </section>
+
         <!-- Grid de Produtos -->
         <section class="products-grid" id="productsGrid">
             <!-- Produtos serão inseridos via JavaScript -->
@@ -84,6 +170,68 @@
 
     <!-- Página de Créditos -->
     <main class="main page-creditos" id="pageCreditos" style="display: none;">
+        <!-- Seção da Loja -->
+        <section class="creditos-section loja-section">
+            <h2 class="creditos-title">Sobre a Loja</h2>
+
+            <div class="loja-card">
+                <div class="loja-image-container">
+                    <img src="Foto/Logo.png" alt="Imperio Logo" class="loja-image">
+                </div>
+                <h3 class="loja-name">IMPERIOMEN</h3>
+                <p class="loja-slogan">Moda Masculina com Estilo</p>
+            </div>
+
+            <div class="loja-about">
+                <p>
+                    A <strong>ImperioMen</strong> é uma loja de roupas masculinas focada em trazer
+                    as melhores peças com qualidade e estilo. Trabalhamos com camisetas, moletons,
+                    calças, shorts e calçados das melhores marcas e tendências do mercado.
+                </p>
+                <p>
+                    Realizamos <strong>sorteios exclusivos</strong> para nossos seguidores!
+                    Siga nosso Instagram para participar e concorrer a prêmios incríveis.
+                    Fique por dentro das novidades, lançamentos e promoções especiais.
+                </p>
+                <div class="loja-destaque">
+                    <p>Siga-nos nas redes sociais e participe dos nossos sorteios!</p>
+                </div>
+            </div>
+
+            <div class="loja-info-grid">
+                <div class="loja-info-card">
+                    <div class="loja-info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="loja-info-content">
+                        <h4>Localização</h4>
+                        <p>Rua Paraná, 777</p>
+                        <p>Estrela D'Oeste - SP</p>
+                        <p>CEP: 15650-000</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loja-contacts">
+                <a href="https://wa.me/5517988119720" target="_blank" class="loja-contact-btn whatsapp">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="https://www.instagram.com/_imperiomenn/" target="_blank" class="loja-contact-btn instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span>Instagram</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Seção dos Desenvolvedores -->
         <section class="creditos-section">
             <h2 class="creditos-title">Desenvolvedores</h2>
 
@@ -160,8 +308,19 @@
     <div class="modal" id="productModal">
         <div class="modal-content">
             <button class="modal-close" id="modalClose">&times;</button>
-            <div class="modal-gallery">
+            <div class="modal-gallery" id="modalGallery">
+                <button class="gallery-nav gallery-prev" id="galleryPrev">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
                 <img src="" alt="" class="modal-image" id="modalImage">
+                <button class="gallery-nav gallery-next" id="galleryNext">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <div class="gallery-dots" id="galleryDots"></div>
                 <div class="modal-thumbnails" id="modalThumbnails"></div>
             </div>
             <div class="modal-info">
@@ -169,6 +328,7 @@
                 <h2 class="modal-title" id="modalTitle"></h2>
                 <p class="modal-code" id="modalCode"></p>
                 <p class="modal-price" id="modalPrice"></p>
+                <p class="modal-color" id="modalColor"></p>
                 <div class="modal-sizes">
                     <p>Tamanhos disponíveis:</p>
                     <div class="sizes-list" id="modalSizes"></div>
