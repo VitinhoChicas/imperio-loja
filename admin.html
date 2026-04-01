@@ -72,16 +72,26 @@
                     </svg>
                     Nova Roupa
                 </button>
+                <button class="btn-secondary btn-large" id="manageCategoriesBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Categorias
+                </button>
+                <button class="btn-secondary btn-large" id="manageSizesBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Tamanhos
+                </button>
             </section>
 
             <!-- Filtros Admin -->
-            <section class="filters admin-filters">
-                <button class="filter-btn active" data-filter="todos">Todos</button>
-                <button class="filter-btn" data-filter="camisas-moletons">Camisas/Moletons</button>
-                <button class="filter-btn" data-filter="calcados">Calçados</button>
-                <button class="filter-btn" data-filter="shorts-calcas">Shorts/Calças</button>
-                <button class="filter-btn" data-filter="disponivel">Disponíveis</button>
-                <button class="filter-btn" data-filter="arquivado">Arquivados</button>
+            <section class="filters admin-filters" id="adminFilters">
+                <!-- Filtros serão carregados via JS -->
             </section>
 
             <!-- Lista de Produtos -->
@@ -106,9 +116,7 @@
                     <label for="productCategory">Categoria</label>
                     <select id="productCategory" class="category-select" required>
                         <option value="">Selecione a categoria</option>
-                        <option value="camisas-moletons">Camisas/Moletons</option>
-                        <option value="calcados">Calçados</option>
-                        <option value="shorts-calcas">Shorts/Calças</option>
+                        <!-- Categorias serão carregadas via JS -->
                     </select>
                 </div>
 
@@ -184,51 +192,8 @@
 
                 <div class="form-group">
                     <label>Tamanhos Disponíveis</label>
-                    <div class="sizes-checkboxes">
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="PP">
-                            <span>PP</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="P">
-                            <span>P</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="M">
-                            <span>M</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="G">
-                            <span>G</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="GG">
-                            <span>GG</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="XG">
-                            <span>XG</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="36">
-                            <span>36</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="38">
-                            <span>38</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="40">
-                            <span>40</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="42">
-                            <span>42</span>
-                        </label>
-                        <label class="size-checkbox">
-                            <input type="checkbox" name="sizes" value="44">
-                            <span>44</span>
-                        </label>
+                    <div class="sizes-checkboxes" id="sizesCheckboxes">
+                        <!-- Tamanhos serão carregados via JS -->
                     </div>
                 </div>
 
@@ -248,6 +213,63 @@
             <div class="form-actions">
                 <button class="btn-secondary" id="confirmCancel">Cancelar</button>
                 <button class="btn-danger" id="confirmAction">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Categorias -->
+    <div class="modal" id="categoriesModal">
+        <div class="modal-content modal-form">
+            <button class="modal-close" id="categoriesModalClose">&times;</button>
+            <h2>Gerenciar Categorias</h2>
+
+            <div class="manage-section">
+                <h3>Adicionar Nova Categoria</h3>
+                <div class="add-item-row">
+                    <input type="text" id="newCategoryId" placeholder="ID (ex: tenis)" class="input-small">
+                    <input type="text" id="newCategoryName" placeholder="Nome (ex: Tênis)" class="input-medium">
+                    <button type="button" class="btn-primary btn-small" id="addCategoryBtn">Adicionar</button>
+                </div>
+                <small class="field-hint">ID deve ser único, sem espaços (use hífen). Nome é o que aparece na loja.</small>
+            </div>
+
+            <div class="manage-section">
+                <h3>Categorias Cadastradas</h3>
+                <div class="items-list" id="categoriesList">
+                    <!-- Lista de categorias será inserida via JS -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="closeCategoriesModal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Tamanhos -->
+    <div class="modal" id="sizesModal">
+        <div class="modal-content modal-form">
+            <button class="modal-close" id="sizesModalClose">&times;</button>
+            <h2>Gerenciar Tamanhos</h2>
+
+            <div class="manage-section">
+                <h3>Adicionar Novo Tamanho</h3>
+                <div class="add-item-row">
+                    <input type="text" id="newSizeValue" placeholder="Tamanho (ex: 43, XXG)" class="input-medium">
+                    <button type="button" class="btn-primary btn-small" id="addSizeBtn">Adicionar</button>
+                </div>
+                <small class="field-hint">Digite o tamanho exatamente como deve aparecer (ex: 43, 44, XXG, 3XG)</small>
+            </div>
+
+            <div class="manage-section">
+                <h3>Tamanhos Cadastrados</h3>
+                <div class="items-list sizes-grid" id="sizesList">
+                    <!-- Lista de tamanhos será inserida via JS -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="closeSizesModal">Fechar</button>
             </div>
         </div>
     </div>

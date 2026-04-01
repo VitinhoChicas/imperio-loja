@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual do Sistema - ImperioMen</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        .cover {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .cover h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .cover .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .cover .version {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .toc a:hover {
+            color: #000;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            color: #1a1a1a;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #1a1a1a;
+        }
+
+        h3 {
+            color: #444;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .step-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1a1a1a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .step-box h4 {
+            margin-top: 0;
+            color: #1a1a1a;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #1a1a1a;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #1a1a1a;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box::before {
+            content: "IMPORTANTE: ";
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .tip-box {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .tip-box::before {
+            content: "DICA: ";
+            font-weight: bold;
+            color: #155724;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box::before {
+            content: "SAIBA: ";
+            font-weight: bold;
+            color: #0c5460;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .field-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .field-table th,
+        .field-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .field-table th {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .field-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .print-btn:hover {
+            background: #333;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .image-placeholder {
+            background: #e9ecef;
+            border: 2px dashed #adb5bd;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">Salvar como PDF</button>
+
+    <!-- CAPA -->
+    <div class="cover">
+        <h1>MANUAL DO SISTEMA</h1>
+        <p class="subtitle">ImperioMen - Loja de Roupas</p>
+        <p class="version">Guia Completo para Iniciantes</p>
+        <p class="version">Versao 1.0 - Marco 2026</p>
+    </div>
+
+    <!-- INDICE -->
+    <div class="toc">
+        <h2>Indice</h2>
+        <ul>
+            <li><a href="#intro"><span>1. Introducao ao Sistema</span><span>3</span></a></li>
+            <li><a href="#acesso"><span>2. Como Acessar o Painel Administrativo</span><span>4</span></a></li>
+            <li><a href="#cadastro"><span>3. Cadastro de Roupas (Produtos)</span><span>5</span></a></li>
+            <li><a href="#editar"><span>4. Como Editar um Produto</span><span>8</span></a></li>
+            <li><a href="#arquivar"><span>5. Arquivar e Restaurar Produtos</span><span>9</span></a></li>
+            <li><a href="#excluir"><span>6. Como Excluir um Produto</span><span>10</span></a></li>
+            <li><a href="#loja"><span>7. Como Funciona a Loja (Visao do Cliente)</span><span>11</span></a></li>
+            <li><a href="#pedidos"><span>8. Recebendo Pedidos pelo WhatsApp</span><span>13</span></a></li>
+            <li><a href="#duvidas"><span>9. Duvidas Frequentes</span><span>14</span></a></li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 1 - INTRODUCAO -->
+    <div class="section" id="intro">
+        <h2>1. Introducao ao Sistema</h2>
+
+        <p>Bem-vindo ao manual do sistema <strong>ImperioMen</strong>! Este guia foi criado para ajudar voce a usar todas as funcionalidades do sistema de forma simples e pratica, mesmo que voce nunca tenha mexido em sistemas antes.</p>
+
+        <h3>O que e o Sistema ImperioMen?</h3>
+        <p>O ImperioMen e uma loja virtual de roupas masculinas. Com ele, voce pode:</p>
+        <ul>
+            <li><strong>Cadastrar roupas</strong> para vender na loja</li>
+            <li><strong>Adicionar fotos</strong> dos produtos</li>
+            <li><strong>Definir precos, tamanhos e cores</strong></li>
+            <li><strong>Receber pedidos</strong> diretamente no WhatsApp</li>
+            <li><strong>Gerenciar seu estoque</strong> de forma facil</li>
+        </ul>
+
+        <h3>O Sistema tem Duas Partes:</h3>
+
+        <div class="step-box">
+            <h4>1. A Loja (Para os Clientes)</h4>
+            <p>E a parte que os clientes veem. Eles podem navegar pelos produtos, ver fotos, precos e fazer pedidos pelo WhatsApp.</p>
+            <p><strong>Endereco:</strong> Abra o arquivo <code>index.html</code></p>
+        </div>
+
+        <div class="step-box">
+            <h4>2. O Painel Administrativo (Para Voce)</h4>
+            <p>E a parte onde voce cadastra, edita e gerencia os produtos. So voce tem acesso com uma senha.</p>
+            <p><strong>Endereco:</strong> Abra o arquivo <code>admin.html</code></p>
+        </div>
+
+        <div class="info-box">
+            O sistema funciona em qualquer navegador (Chrome, Firefox, Edge, Safari) e tambem no celular!
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 2 - ACESSO -->
+    <div class="section" id="acesso">
+        <h2>2. Como Acessar o Painel Administrativo</h2>
+
+        <p>Para cadastrar ou editar produtos, voce precisa acessar o painel administrativo. Veja como fazer:</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Abra o arquivo admin.html</strong><br>
+                Encontre a pasta do sistema no seu computador e clique duas vezes no arquivo chamado <code>admin.html</code>. O navegador vai abrir automaticamente.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Digite a senha</strong><br>
+                Uma tela de login vai aparecer pedindo a senha. Digite a senha e clique em "Entrar".
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Pronto!</strong><br>
+                Voce esta no painel administrativo. Agora pode cadastrar e gerenciar seus produtos.
+            </div>
+        </div>
+
+        <div class="warning-box">
+            A senha padrao do sistema e: <strong>imperio2024</strong><br>
+            Guarde essa senha em um lugar seguro e nao compartilhe com outras pessoas.
+        </div>
+
+        <h3>O que voce vai ver no Painel</h3>
+        <p>Ao entrar, voce vera:</p>
+        <ul>
+            <li><strong>Estatisticas:</strong> Quantos produtos voce tem cadastrados</li>
+            <li><strong>Botao "Nova Roupa":</strong> Para cadastrar um novo produto</li>
+            <li><strong>Lista de Produtos:</strong> Todos os produtos cadastrados</li>
+            <li><strong>Filtros:</strong> Para encontrar produtos por categoria ou status</li>
+        </ul>
+
+        <div class="tip-box">
+            Se voce fechar o navegador, precisara digitar a senha novamente na proxima vez.
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 3 - CADASTRO -->
+    <div class="section" id="cadastro">
+        <h2>3. Cadastro de Roupas (Produtos)</h2>
+
+        <p>Esta e a parte mais importante! Aqui voce vai aprender a cadastrar novos produtos na sua loja.</p>
+
+        <h3>Passo a Passo para Cadastrar uma Roupa</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Clique no botao "Nova Roupa"</strong><br>
+                Este botao fica na parte superior do painel. Ao clicar, um formulario vai aparecer.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Escolha a Categoria</strong><br>
+                Selecione o tipo de roupa que voce esta cadastrando:
+                <ul>
+                    <li><strong>Camisas/Moletons:</strong> Camisetas, camisas sociais, moletons, blusas</li>
+                    <li><strong>Calcados:</strong> Tenis, sapatos, chinelos, botas</li>
+                    <li><strong>Shorts/Calcas:</strong> Bermudas, shorts, calcas jeans, calcas sociais</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Adicione as Fotos do Produto</strong><br>
+                Clique na area de fotos e escolha ate 4 fotos do produto no seu computador.
+                <ul>
+                    <li>A <strong>primeira foto</strong> sera a principal (aparece na lista de produtos)</li>
+                    <li>Voce pode adicionar ate <strong>4 fotos</strong> para mostrar detalhes</li>
+                    <li>Use fotos com boa iluminacao e qualidade</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <div class="step-content">
+                <strong>Digite o Codigo do Produto</strong><br>
+                Crie um codigo unico para identificar o produto. Exemplos:
+                <ul>
+                    <li>CAM001 (para camisa numero 1)</li>
+                    <li>TEN005 (para tenis numero 5)</li>
+                    <li>CAL010 (para calca numero 10)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            O codigo deve ser unico! Nao pode existir dois produtos com o mesmo codigo.
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <div class="step-content">
+                <strong>Digite a Descricao do Produto</strong><br>
+                Escreva o nome ou descricao da roupa. Exemplos:
+                <ul>
+                    <li>"Camiseta Preta Basica Algodao"</li>
+                    <li>"Tenis Nike Air Max Branco"</li>
+                    <li>"Calca Jeans Skinny Azul"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <div class="step-content">
+                <strong>Digite o Preco</strong><br>
+                Informe o valor do produto. Digite apenas numeros e ponto para centavos.
+                <ul>
+                    <li>Para R$ 89,90 digite: <strong>89.90</strong></li>
+                    <li>Para R$ 150,00 digite: <strong>150</strong> ou <strong>150.00</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">7</span>
+            <div class="step-content">
+                <strong>Escolha a Cor</strong><br>
+                Selecione a cor principal do produto na lista:
+                <ul>
+                    <li>Preto, Branco, Cinza, Azul, Vermelho</li>
+                    <li>Verde, Amarelo, Rosa, Laranja, Marrom</li>
+                    <li>Bege, Roxo, Multicolor</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">8</span>
+            <div class="step-content">
+                <strong>Selecione os Tamanhos Disponiveis</strong><br>
+                Marque todos os tamanhos que voce tem em estoque:
+                <ul>
+                    <li><strong>Para roupas:</strong> PP, P, M, G, GG, XG</li>
+                    <li><strong>Para calcados:</strong> 36, 38, 40, 42, 44</li>
+                </ul>
+                Voce pode marcar varios tamanhos ao mesmo tempo!
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">9</span>
+            <div class="step-content">
+                <strong>Clique em "Salvar"</strong><br>
+                Revise todas as informacoes e clique no botao Salvar. O produto sera cadastrado e ja aparecera na loja!
+            </div>
+        </div>
+
+        <div class="tip-box">
+            Depois de salvar, o produto aparece automaticamente na loja para os clientes verem. Nao precisa fazer mais nada!
+        </div>
+
+        <h3>Tabela de Campos do Cadastro</h3>
+
+        <table class="field-table">
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>O que colocar</th>
+                    <th>Obrigatorio?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Categoria</td>
+                    <td>Tipo de roupa (Camisas, Calcados ou Shorts/Calcas)</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Fotos</td>
+                    <td>1 a 4 fotos do produto</td>
+                    <td>Sim (minimo 1)</td>
+                </tr>
+                <tr>
+                    <td>Codigo</td>
+                    <td>Codigo unico (ex: CAM001)</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Descricao</td>
+                    <td>Nome/descricao da roupa</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Preco</td>
+                    <td>Valor em reais (ex: 89.90)</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Cor</td>
+                    <td>Cor principal do produto</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Tamanhos</td>
+                    <td>Tamanhos disponiveis em estoque</td>
+                    <td>Sim (minimo 1)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 4 - EDITAR -->
+    <div class="section" id="editar">
+        <h2>4. Como Editar um Produto</h2>
+
+        <p>Precisa mudar o preco? Adicionar um novo tamanho? Trocar a foto? E muito facil editar um produto!</p>
+
+        <h3>Passo a Passo</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Encontre o produto na lista</strong><br>
+                No painel administrativo, role a pagina ate encontrar o produto que deseja editar. Voce pode usar os filtros para facilitar.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Clique no botao "Editar"</strong><br>
+                Cada produto tem um botao "Editar" ao lado. Clique nele.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Faca as alteracoes desejadas</strong><br>
+                O formulario vai abrir com todas as informacoes atuais do produto. Mude o que precisar:
+                <ul>
+                    <li>Alterar o preco</li>
+                    <li>Adicionar ou remover tamanhos</li>
+                    <li>Trocar ou adicionar fotos</li>
+                    <li>Mudar a descricao</li>
+                    <li>Qualquer outro campo</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <div class="step-content">
+                <strong>Clique em "Salvar"</strong><br>
+                Apos fazer as alteracoes, clique em Salvar. As mudancas serao aplicadas imediatamente.
+            </div>
+        </div>
+
+        <div class="info-box">
+            As alteracoes aparecem na loja em tempo real! Assim que voce salvar, os clientes ja verao as novas informacoes.
+        </div>
+
+        <h3>Dicas para Edicao</h3>
+        <ul>
+            <li><strong>Para trocar uma foto:</strong> Remova a foto antiga clicando no X e adicione a nova</li>
+            <li><strong>Para adicionar tamanhos:</strong> Marque os novos tamanhos e salve</li>
+            <li><strong>Para remover tamanhos:</strong> Desmarque os tamanhos que acabaram e salve</li>
+        </ul>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 5 - ARQUIVAR -->
+    <div class="section" id="arquivar">
+        <h2>5. Arquivar e Restaurar Produtos</h2>
+
+        <p>Quando um produto acaba no estoque mas voce pretende repor depois, voce pode <strong>arquivar</strong> em vez de excluir. Assim, ele some da loja mas continua salvo no sistema.</p>
+
+        <h3>Como Arquivar um Produto</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Encontre o produto na lista</strong><br>
+                Localize o produto que deseja arquivar.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Clique no botao "Arquivar"</strong><br>
+                Vai aparecer uma mensagem de confirmacao. Confirme clicando em "Sim".
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Pronto!</strong><br>
+                O produto nao aparece mais na loja para os clientes, mas continua salvo.
+            </div>
+        </div>
+
+        <h3>Como Restaurar um Produto Arquivado</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Filtre por "Arquivados"</strong><br>
+                No painel, use o filtro e selecione "Arquivados" para ver os produtos arquivados.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Clique no botao "Restaurar"</strong><br>
+                Encontre o produto e clique em "Restaurar".
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Pronto!</strong><br>
+                O produto volta a aparecer na loja para os clientes.
+            </div>
+        </div>
+
+        <div class="tip-box">
+            Use o arquivamento para produtos sazonais (roupas de inverno, por exemplo) ou produtos que estao temporariamente esgotados.
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 6 - EXCLUIR -->
+    <div class="section" id="excluir">
+        <h2>6. Como Excluir um Produto</h2>
+
+        <p>Se voce precisa remover um produto permanentemente do sistema, pode exclui-lo. Mas cuidado: essa acao nao pode ser desfeita!</p>
+
+        <h3>Passo a Passo</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Encontre o produto na lista</strong><br>
+                Localize o produto que deseja excluir.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Clique no botao "Excluir"</strong><br>
+                Uma mensagem de confirmacao vai aparecer perguntando se voce tem certeza.
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Confirme a exclusao</strong><br>
+                Se tiver certeza, confirme. O produto sera removido permanentemente.
+            </div>
+        </div>
+
+        <div class="warning-box">
+            A exclusao e permanente! Uma vez excluido, o produto e suas fotos serao removidos para sempre. Se achar que pode precisar do produto no futuro, use a opcao "Arquivar" em vez de excluir.
+        </div>
+
+        <h3>Quando Excluir vs. Quando Arquivar?</h3>
+
+        <table class="field-table">
+            <thead>
+                <tr>
+                    <th>Situacao</th>
+                    <th>Recomendacao</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Produto esgotado mas vai repor</td>
+                    <td><strong>Arquivar</strong></td>
+                </tr>
+                <tr>
+                    <td>Produto sazonal (inverno/verao)</td>
+                    <td><strong>Arquivar</strong></td>
+                </tr>
+                <tr>
+                    <td>Produto descontinuado para sempre</td>
+                    <td><strong>Excluir</strong></td>
+                </tr>
+                <tr>
+                    <td>Produto cadastrado por engano</td>
+                    <td><strong>Excluir</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 7 - LOJA -->
+    <div class="section" id="loja">
+        <h2>7. Como Funciona a Loja (Visao do Cliente)</h2>
+
+        <p>E importante entender como os clientes veem e usam a loja para poder ajuda-los melhor!</p>
+
+        <h3>A Pagina Principal da Loja</h3>
+
+        <p>Quando um cliente acessa a loja, ele ve:</p>
+        <ul>
+            <li><strong>Logo e nome da loja</strong> no topo</li>
+            <li><strong>Categorias:</strong> Botoes para filtrar (Todos, Camisas, Calcados, Shorts)</li>
+            <li><strong>Filtros avancados:</strong> Por tamanho, cor e faixa de preco</li>
+            <li><strong>Grade de produtos:</strong> Todos os produtos disponiveis</li>
+            <li><strong>Carrinho:</strong> Icone no canto para ver itens selecionados</li>
+        </ul>
+
+        <h3>Como o Cliente Compra</h3>
+
+        <p>O cliente tem <strong>3 formas</strong> de comprar:</p>
+
+        <div class="step-box">
+            <h4>Opcao 1: Compra Rapida</h4>
+            <p>O cliente clica em "Comprar" direto no card do produto. O WhatsApp abre com uma mensagem pronta com os dados do produto.</p>
+        </div>
+
+        <div class="step-box">
+            <h4>Opcao 2: Ver Detalhes e Comprar</h4>
+            <p>O cliente clica no produto para ver mais fotos e detalhes. Escolhe o tamanho desejado e clica em "Comprar Agora". O WhatsApp abre com todos os detalhes.</p>
+        </div>
+
+        <div class="step-box">
+            <h4>Opcao 3: Carrinho de Compras</h4>
+            <p>O cliente adiciona varios produtos ao carrinho. Quando terminar, abre o carrinho, confere os itens e clica em "Finalizar Pedido". O WhatsApp abre com a lista completa.</p>
+        </div>
+
+        <h3>O que o Cliente Ve no Produto</h3>
+        <ul>
+            <li><strong>Fotos:</strong> Pode navegar entre as fotos (ate 4)</li>
+            <li><strong>Categoria:</strong> Tipo de roupa</li>
+            <li><strong>Codigo:</strong> Para identificar o produto</li>
+            <li><strong>Nome/Descricao:</strong> O que voce digitou</li>
+            <li><strong>Preco:</strong> Valor formatado (R$ XX,XX)</li>
+            <li><strong>Cor:</strong> A cor principal</li>
+            <li><strong>Tamanhos:</strong> Quais tamanhos estao disponiveis</li>
+        </ul>
+
+        <div class="info-box">
+            O cliente NAO precisa criar conta ou fazer login. E so escolher e comprar pelo WhatsApp!
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 8 - PEDIDOS -->
+    <div class="section" id="pedidos">
+        <h2>8. Recebendo Pedidos pelo WhatsApp</h2>
+
+        <p>Todos os pedidos chegam no seu WhatsApp. Veja como funciona:</p>
+
+        <h3>Como o Pedido Chega</h3>
+
+        <p>Quando um cliente faz um pedido, voce recebe uma mensagem no WhatsApp assim:</p>
+
+        <div class="step-box">
+            <p><strong>Exemplo de mensagem de pedido unico:</strong></p>
+            <p style="background: #e9ecef; padding: 10px; border-radius: 5px; font-family: monospace;">
+                Ola! Gostaria de comprar:<br><br>
+                Produto: Camiseta Preta Basica<br>
+                Codigo: CAM001<br>
+                Tamanho: M<br>
+                Preco: R$ 89,90<br><br>
+                Aguardo retorno!
+            </p>
+        </div>
+
+        <div class="step-box">
+            <p><strong>Exemplo de mensagem com varios itens (carrinho):</strong></p>
+            <p style="background: #e9ecef; padding: 10px; border-radius: 5px; font-family: monospace;">
+                Ola! Gostaria de fazer o seguinte pedido:<br><br>
+                1x Camiseta Preta (CAM001) - Tam: M - R$ 89,90<br>
+                2x Bermuda Jeans (BER005) - Tam: G - R$ 79,90<br><br>
+                Total: R$ 249,70<br><br>
+                Aguardo retorno!
+            </p>
+        </div>
+
+        <h3>O que Fazer Quando Receber um Pedido</h3>
+
+        <ol>
+            <li><strong>Confirme a disponibilidade</strong> do produto e tamanho</li>
+            <li><strong>Informe o prazo</strong> de entrega ou retirada</li>
+            <li><strong>Combine a forma de pagamento</strong> (Pix, dinheiro, cartao)</li>
+            <li><strong>Confirme o endereco</strong> de entrega ou local de retirada</li>
+            <li><strong>Finalize a venda</strong> normalmente</li>
+        </ol>
+
+        <div class="tip-box">
+            Responda os pedidos o mais rapido possivel! Clientes valorizam agilidade no atendimento.
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- SECAO 9 - DUVIDAS -->
+    <div class="section" id="duvidas">
+        <h2>9. Duvidas Frequentes</h2>
+
+        <h3>Esqueci a senha do painel. O que faco?</h3>
+        <p>A senha padrao e <strong>imperio2024</strong>. Se precisar alterar a senha, entre em contato com o desenvolvedor.</p>
+
+        <h3>As fotos nao estao carregando. Por que?</h3>
+        <p>Verifique sua conexao com a internet. O sistema precisa de internet para carregar as fotos que estao armazenadas na nuvem.</p>
+
+        <h3>Posso acessar o painel pelo celular?</h3>
+        <p>Sim! O sistema funciona no celular. Basta acessar o arquivo admin.html pelo navegador do celular.</p>
+
+        <h3>Quantos produtos posso cadastrar?</h3>
+        <p>Nao ha limite! Voce pode cadastrar quantos produtos quiser.</p>
+
+        <h3>As mudancas aparecem na loja na hora?</h3>
+        <p>Sim! Todas as alteracoes (cadastro, edicao, exclusao) aparecem instantaneamente na loja.</p>
+
+        <h3>E se eu cadastrar algo errado?</h3>
+        <p>Sem problemas! E so editar o produto e corrigir as informacoes. Se cadastrou um produto por engano, pode excluir.</p>
+
+        <h3>Como mudo o numero do WhatsApp?</h3>
+        <p>O numero do WhatsApp esta configurado no sistema. Para alterar, entre em contato com o desenvolvedor.</p>
+
+        <h3>Posso usar fotos do Google?</h3>
+        <p>Recomendamos usar fotos proprias dos produtos reais. Isso gera mais confianca nos clientes e evita problemas com direitos autorais.</p>
+
+        <h3>Preciso de internet para usar o sistema?</h3>
+        <p>Sim, o sistema precisa de internet para funcionar, tanto a loja quanto o painel administrativo.</p>
+    </div>
+
+    <!-- RODAPE -->
+    <div class="footer">
+        <p><strong>Manual do Sistema ImperioMen</strong></p>
+        <p>Desenvolvido por Victor e Jean</p>
+        <p>Versao 1.0 - Marco 2026</p>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+            Em caso de duvidas, entre em contato:<br>
+            WhatsApp: (17) 99753-9595 (Victor) | (17) 99625-4979 (Jean)
+        </p>
+    </div>
+
+</body>
+</html>

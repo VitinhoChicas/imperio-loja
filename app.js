@@ -6,12 +6,30 @@
 // Número do WhatsApp para pedidos
 const WHATSAPP_NUMBER = '5517988119720';
 
-// Mapeamento de categorias
-const CATEGORY_LABELS = {
-    'camisas-moletons': 'Camisas/Moletons',
-    'calcados': 'Calçados',
-    'shorts-calcas': 'Shorts/Calças'
-};
+// Categorias padrão
+const DEFAULT_CATEGORIES = [
+    { id: 'camisas-moletons', name: 'Camisas/Moletons' },
+    { id: 'calcados', name: 'Calçados' },
+    { id: 'shorts-calcas', name: 'Shorts/Calças' }
+];
+
+// Tamanhos padrão
+const DEFAULT_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', '36', '38', '40', '42', '44'];
+
+// Carregar categorias e tamanhos do localStorage ou usar padrões
+let customCategories = JSON.parse(localStorage.getItem('imperio_categories')) || DEFAULT_CATEGORIES;
+let customSizes = JSON.parse(localStorage.getItem('imperio_sizes')) || DEFAULT_SIZES;
+
+// Mapeamento de categorias (dinâmico)
+function getCategoryLabels() {
+    const labels = {};
+    customCategories.forEach(cat => {
+        labels[cat.id] = cat.name;
+    });
+    return labels;
+}
+
+let CATEGORY_LABELS = getCategoryLabels();
 
 // Estado da aplicação
 let products = [];
@@ -59,7 +77,6 @@ const modalCategory = document.getElementById('modalCategory');
 const sizeSelect = document.getElementById('sizeSelect');
 const addToCartBtn = document.getElementById('addToCartBtn');
 const buyNowBtn = document.getElementById('buyNowBtn');
-const categoryBtns = document.querySelectorAll('.category-btn');
 const navBtns = document.querySelectorAll('.nav-btn');
 const pageLoja = document.getElementById('pageLoja');
 const pageCreditos = document.getElementById('pageCreditos');
@@ -68,7 +85,6 @@ const pageCreditos = document.getElementById('pageCreditos');
 const filtersToggle = document.getElementById('filtersToggle');
 const filtersPanel = document.getElementById('filtersPanel');
 const filtersCount = document.getElementById('filtersCount');
-const filterSizesBtns = document.querySelectorAll('#filterSizes .filter-option');
 const filterColorsBtns = document.querySelectorAll('#filterColors .filter-option');
 const filterPriceBtns = document.querySelectorAll('#filterPrice .filter-option');
 const clearFiltersBtn = document.getElementById('clearFiltersBtn');
@@ -78,10 +94,100 @@ const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadCategoriesAndSizes();
     loadProducts();
     updateCartUI();
     setupEventListeners();
 });
+
+// ========================================
+// CARREGAR CATEGORIAS E TAMANHOS
+// ========================================
+
+function loadCategoriesAndSizes() {
+    // Recarregar do localStorage
+    customCategories = JSON.parse(localStorage.getItem('imperio_categories')) || DEFAULT_CATEGORIES;
+    customSizes = JSON.parse(localStorage.getItem('imperio_sizes')) || DEFAULT_SIZES;
+    CATEGORY_LABELS = getCategoryLabels();
+
+    // Renderizar categorias
+    renderCategories();
+
+    // Renderizar filtros de tamanhos
+    renderSizeFilters();
+}
+
+function renderCategories() {
+    const container = document.getElementById('categoriesSection');
+    if (!container) return;
+
+    // Ícone padrão para categorias
+    const defaultIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+    </svg>`;
+
+    // Ícones específicos para categorias conhecidas
+    const categoryIcons = {
+        'todos': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>`,
+        'camisas-moletons': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path>
+        </svg>`,
+        'calcados': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 18a2 2 0 002 2h16a2 2 0 002-2v-2H2v2z"></path>
+            <path d="M2 16l3-11h4l1 4h4l1-4h4l3 11"></path>
+        </svg>`,
+        'shorts-calcas': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2h12l-2 20H8L6 2z"></path>
+            <path d="M12 2v7"></path>
+        </svg>`
+    };
+
+    let html = `
+        <button class="category-btn active" data-category="todos">
+            <span class="category-icon">${categoryIcons['todos']}</span>
+            <span>Todos</span>
+        </button>
+    `;
+
+    customCategories.forEach(cat => {
+        const icon = categoryIcons[cat.id] || defaultIcon;
+        html += `
+            <button class="category-btn" data-category="${cat.id}">
+                <span class="category-icon">${icon}</span>
+                <span>${cat.name}</span>
+            </button>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    // Adicionar event listeners
+    container.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => setCategory(btn.dataset.category));
+    });
+}
+
+function renderSizeFilters() {
+    const container = document.getElementById('filterSizes');
+    if (!container) return;
+
+    container.innerHTML = customSizes.map(size =>
+        `<button class="filter-option" data-size="${size}">${size}</button>`
+    ).join('');
+
+    // Adicionar event listeners
+    container.querySelectorAll('.filter-option').forEach(btn => {
+        btn.addEventListener('click', () => toggleSizeFilter(btn.dataset.size, btn));
+    });
+}
 
 // ========================================
 // NAVEGAÇÃO
@@ -715,7 +821,7 @@ function clearFilters() {
     activeFilters.priceRange = null;
 
     // Remover active de todos os botões de filtro
-    filterSizesBtns.forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#filterSizes .filter-option').forEach(btn => btn.classList.remove('active'));
     filterColorsBtns.forEach(btn => btn.classList.remove('active'));
     filterPriceBtns.forEach(btn => btn.classList.remove('active'));
 
@@ -763,17 +869,8 @@ function setupEventListeners() {
     galleryPrev.addEventListener('click', prevImage);
     galleryNext.addEventListener('click', nextImage);
 
-    // Categorias
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => setCategory(btn.dataset.category));
-    });
-
     // Filtros
     filtersToggle.addEventListener('click', toggleFiltersPanel);
-
-    filterSizesBtns.forEach(btn => {
-        btn.addEventListener('click', () => toggleSizeFilter(btn.dataset.size, btn));
-    });
 
     filterColorsBtns.forEach(btn => {
         btn.addEventListener('click', () => toggleColorFilter(btn.dataset.color, btn));

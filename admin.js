@@ -6,12 +6,30 @@
 // Senha de acesso ao admin (altere para sua senha)
 const ADMIN_PASSWORD = 'imperio2024';
 
-// Mapeamento de categorias
-const CATEGORY_LABELS = {
-    'camisas-moletons': 'Camisas/Moletons',
-    'calcados': 'Calçados',
-    'shorts-calcas': 'Shorts/Calças'
-};
+// Categorias padrão
+const DEFAULT_CATEGORIES = [
+    { id: 'camisas-moletons', name: 'Camisas/Moletons' },
+    { id: 'calcados', name: 'Calçados' },
+    { id: 'shorts-calcas', name: 'Shorts/Calças' }
+];
+
+// Tamanhos padrão
+const DEFAULT_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG', '36', '38', '40', '42', '44'];
+
+// Carregar categorias e tamanhos do localStorage ou usar padrões
+let customCategories = JSON.parse(localStorage.getItem('imperio_categories')) || DEFAULT_CATEGORIES;
+let customSizes = JSON.parse(localStorage.getItem('imperio_sizes')) || DEFAULT_SIZES;
+
+// Mapeamento de categorias (dinâmico)
+function getCategoryLabels() {
+    const labels = {};
+    customCategories.forEach(cat => {
+        labels[cat.id] = cat.name;
+    });
+    return labels;
+}
+
+let CATEGORY_LABELS = getCategoryLabels();
 
 // Estado da aplicação
 let products = [];
@@ -35,7 +53,6 @@ const archivedProductsEl = document.getElementById('archivedProducts');
 // Elementos DOM - Products
 const adminProductsEl = document.getElementById('adminProducts');
 const addProductBtn = document.getElementById('addProductBtn');
-const filterBtns = document.querySelectorAll('.filter-btn');
 
 // Elementos DOM - Form Modal
 const productFormModal = document.getElementById('productFormModal');
@@ -68,9 +85,224 @@ const confirmAction = document.getElementById('confirmAction');
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadCategoriesAndSizes();
     checkAuth();
     setupEventListeners();
 });
+
+// ========================================
+// GERENCIAMENTO DE CATEGORIAS E TAMANHOS
+// ========================================
+
+function loadCategoriesAndSizes() {
+    customCategories = JSON.parse(localStorage.getItem('imperio_categories')) || DEFAULT_CATEGORIES;
+    customSizes = JSON.parse(localStorage.getItem('imperio_sizes')) || DEFAULT_SIZES;
+    CATEGORY_LABELS = getCategoryLabels();
+
+    updateCategorySelect();
+    updateSizesCheckboxes();
+    updateAdminFilters();
+}
+
+function saveCategories() {
+    localStorage.setItem('imperio_categories', JSON.stringify(customCategories));
+    CATEGORY_LABELS = getCategoryLabels();
+}
+
+function saveSizes() {
+    localStorage.setItem('imperio_sizes', JSON.stringify(customSizes));
+}
+
+function updateCategorySelect() {
+    const select = document.getElementById('productCategory');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Selecione a categoria</option>' +
+        customCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+}
+
+function updateSizesCheckboxes() {
+    const container = document.getElementById('sizesCheckboxes');
+    if (!container) return;
+
+    container.innerHTML = customSizes.map(size => `
+        <label class="size-checkbox">
+            <input type="checkbox" name="sizes" value="${size}">
+            <span>${size}</span>
+        </label>
+    `).join('');
+}
+
+function updateAdminFilters() {
+    const container = document.getElementById('adminFilters');
+    if (!container) return;
+
+    let html = '<button class="filter-btn active" data-filter="todos">Todos</button>';
+
+    customCategories.forEach(cat => {
+        html += `<button class="filter-btn" data-filter="${cat.id}">${cat.name}</button>`;
+    });
+
+    html += '<button class="filter-btn" data-filter="disponivel">Disponíveis</button>';
+    html += '<button class="filter-btn" data-filter="arquivado">Arquivados</button>';
+
+    container.innerHTML = html;
+
+    // Re-adicionar event listeners
+    container.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+    });
+}
+
+function renderCategoriesList() {
+    const list = document.getElementById('categoriesList');
+    if (!list) return;
+
+    if (customCategories.length === 0) {
+        list.innerHTML = '<p class="empty-list">Nenhuma categoria cadastrada</p>';
+        return;
+    }
+
+    list.innerHTML = customCategories.map(cat => `
+        <div class="item-row">
+            <span class="item-id">${cat.id}</span>
+            <span class="item-name">${cat.name}</span>
+            <button class="btn-danger btn-tiny" onclick="removeCategory('${cat.id}')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function renderSizesList() {
+    const list = document.getElementById('sizesList');
+    if (!list) return;
+
+    if (customSizes.length === 0) {
+        list.innerHTML = '<p class="empty-list">Nenhum tamanho cadastrado</p>';
+        return;
+    }
+
+    list.innerHTML = customSizes.map(size => `
+        <div class="size-item">
+            <span>${size}</span>
+            <button class="btn-remove-size" onclick="removeSize('${size}')">×</button>
+        </div>
+    `).join('');
+}
+
+function addCategory() {
+    const idInput = document.getElementById('newCategoryId');
+    const nameInput = document.getElementById('newCategoryName');
+
+    const id = idInput.value.trim().toLowerCase().replace(/\s+/g, '-');
+    const name = nameInput.value.trim();
+
+    if (!id || !name) {
+        alert('Preencha o ID e o Nome da categoria');
+        return;
+    }
+
+    if (customCategories.some(cat => cat.id === id)) {
+        alert('Já existe uma categoria com este ID');
+        return;
+    }
+
+    customCategories.push({ id, name });
+    saveCategories();
+
+    idInput.value = '';
+    nameInput.value = '';
+
+    renderCategoriesList();
+    updateCategorySelect();
+    updateAdminFilters();
+}
+
+function removeCategory(id) {
+    if (!confirm(`Remover a categoria "${CATEGORY_LABELS[id]}"?\n\nProdutos com esta categoria continuarão funcionando, mas ela não aparecerá mais para seleção.`)) {
+        return;
+    }
+
+    customCategories = customCategories.filter(cat => cat.id !== id);
+    saveCategories();
+
+    renderCategoriesList();
+    updateCategorySelect();
+    updateAdminFilters();
+}
+
+function addSize() {
+    const input = document.getElementById('newSizeValue');
+    const size = input.value.trim().toUpperCase();
+
+    if (!size) {
+        alert('Digite o tamanho');
+        return;
+    }
+
+    if (customSizes.includes(size)) {
+        alert('Este tamanho já existe');
+        return;
+    }
+
+    customSizes.push(size);
+    saveSizes();
+
+    input.value = '';
+
+    renderSizesList();
+    updateSizesCheckboxes();
+}
+
+function removeSize(size) {
+    if (!confirm(`Remover o tamanho "${size}"?\n\nProdutos com este tamanho continuarão funcionando.`)) {
+        return;
+    }
+
+    customSizes = customSizes.filter(s => s !== size);
+    saveSizes();
+
+    renderSizesList();
+    updateSizesCheckboxes();
+}
+
+function openCategoriesModal() {
+    console.log('Abrindo modal de categorias');
+    renderCategoriesList();
+    const modal = document.getElementById('categoriesModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('Modal de categorias não encontrado');
+    }
+}
+
+function closeCategoriesModal() {
+    document.getElementById('categoriesModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function openSizesModal() {
+    console.log('Abrindo modal de tamanhos');
+    renderSizesList();
+    const modal = document.getElementById('sizesModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('Modal de tamanhos não encontrado');
+    }
+}
+
+function closeSizesModal() {
+    document.getElementById('sizesModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
 
 // ========================================
 // AUTENTICAÇÃO
@@ -576,7 +808,7 @@ function hideConfirm() {
 function setFilter(filter) {
     currentFilter = filter;
 
-    filterBtns.forEach(btn => {
+    document.querySelectorAll('#adminFilters .filter-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.filter === filter);
     });
 
@@ -602,6 +834,81 @@ function setupEventListeners() {
 
     // Adicionar produto
     addProductBtn.addEventListener('click', () => openProductForm());
+
+    // Gerenciar Categorias
+    const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+    const categoriesModalClose = document.getElementById('categoriesModalClose');
+    const closeCategoriesModalBtn = document.getElementById('closeCategoriesModal');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const categoriesModal = document.getElementById('categoriesModal');
+
+    console.log('Botão Categorias encontrado:', !!manageCategoriesBtn);
+    console.log('Modal Categorias encontrado:', !!categoriesModal);
+
+    if (manageCategoriesBtn) {
+        manageCategoriesBtn.addEventListener('click', openCategoriesModal);
+        console.log('Event listener adicionado ao botão Categorias');
+    }
+    if (categoriesModalClose) {
+        categoriesModalClose.addEventListener('click', closeCategoriesModal);
+    }
+    if (closeCategoriesModalBtn) {
+        closeCategoriesModalBtn.addEventListener('click', closeCategoriesModal);
+    }
+    if (addCategoryBtn) {
+        addCategoryBtn.addEventListener('click', addCategory);
+    }
+    if (categoriesModal) {
+        categoriesModal.addEventListener('click', (e) => {
+            if (e.target.id === 'categoriesModal') closeCategoriesModal();
+        });
+    }
+
+    // Gerenciar Tamanhos
+    const manageSizesBtn = document.getElementById('manageSizesBtn');
+    const sizesModalClose = document.getElementById('sizesModalClose');
+    const closeSizesModalBtn = document.getElementById('closeSizesModal');
+    const addSizeBtn = document.getElementById('addSizeBtn');
+    const sizesModal = document.getElementById('sizesModal');
+
+    if (manageSizesBtn) {
+        manageSizesBtn.addEventListener('click', openSizesModal);
+    }
+    if (sizesModalClose) {
+        sizesModalClose.addEventListener('click', closeSizesModal);
+    }
+    if (closeSizesModalBtn) {
+        closeSizesModalBtn.addEventListener('click', closeSizesModal);
+    }
+    if (addSizeBtn) {
+        addSizeBtn.addEventListener('click', addSize);
+    }
+    if (sizesModal) {
+        sizesModal.addEventListener('click', (e) => {
+            if (e.target.id === 'sizesModal') closeSizesModal();
+        });
+    }
+
+    // Enter para adicionar categoria/tamanho
+    const newCategoryName = document.getElementById('newCategoryName');
+    const newSizeValue = document.getElementById('newSizeValue');
+
+    if (newCategoryName) {
+        newCategoryName.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCategory();
+            }
+        });
+    }
+    if (newSizeValue) {
+        newSizeValue.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSize();
+            }
+        });
+    }
 
     // Form modal
     formModalClose.addEventListener('click', closeProductForm);
@@ -648,15 +955,12 @@ function setupEventListeners() {
         if (e.target === confirmModal) hideConfirm();
     });
 
-    // Filtros
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => setFilter(btn.dataset.filter));
-    });
-
     // Fechar com ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeProductForm();
+            closeCategoriesModal();
+            closeSizesModal();
             hideConfirm();
         }
     });
