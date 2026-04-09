@@ -758,6 +758,8 @@ function checkout() {
 function setCategory(category) {
     currentCategory = category;
 
+    // Selecionar botões de categoria dinamicamente
+    const categoryBtns = document.querySelectorAll('#categoriesSection .category-btn');
     categoryBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.category === category);
     });
